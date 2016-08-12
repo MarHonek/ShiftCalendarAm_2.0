@@ -4,12 +4,12 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,21 +19,31 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import org.honorato.multistatetogglebutton.MultiStateToggleButton;
-import org.honorato.multistatetogglebutton.ToggleButton;
-import org.w3c.dom.Text;
 import org.xdty.preference.colorpicker.ColorPickerDialog;
 import org.xdty.preference.colorpicker.ColorPickerSwatch;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import mh.shiftcalendaram.Database.Database;
 
 public class CreateAccountFormActivity extends AppCompatActivity {
 
     TextInputLayout nameLayout, schemeLayout;
-    EditText name, scheme;
+    EditText name, scheme, desc;
 
 
-    MultiStateToggleButton button;
+    MultiStateToggleButton allDaySwitch;
     ImageView palette;
     AppBarLayout head;
+
     int selectedColor;
+    String strColor;
+
+    Database database;
+
+    //data section
+    int positionOfScheme = - 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,20 +55,24 @@ public class CreateAccountFormActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        database = new Database(CreateAccountFormActivity.this);
 
         name = (EditText)findViewById(R.id.edit_text_createAccount_name);
         nameLayout = (TextInputLayout)findViewById(R.id.input_layout_createAccount_name);
         scheme = (EditText)findViewById(R.id.edit_text_createAccount_scheme);
         schemeLayout = (TextInputLayout)findViewById(R.id.input_layout_createAccount_scheme);
+        desc = (EditText)findViewById(R.id.edit_text_createAccount_desc);
 
         head = (AppBarLayout)findViewById(R.id.create_account_head);
         palette = (ImageView)findViewById(R.id.imageView_palette);
 
-        button = (MultiStateToggleButton) this.findViewById(R.id.toggleButton_createAccount_scheme);
-        button.setValue(0);
-       // button.setEnabled(false);
+        allDaySwitch = (MultiStateToggleButton) this.findViewById(R.id.toggleButton_createAccount_scheme);
+        allDaySwitch.setValue(0);
+        allDaySwitch.setEnabled(false);
 
+        //TODO: upravit barvy v pickeru, a vychozí barvu
         selectedColor = ContextCompat.getColor(getBaseContext(), R.color.red);
+        strColor = String.format("#%06X", 0xFFFFFF & selectedColor);
         int[] mColors = getResources().getIntArray(R.array.rainbow);
 
 
@@ -81,7 +95,7 @@ public class CreateAccountFormActivity extends AppCompatActivity {
         scheme.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(CreateAccountFormActivity.this, SchemeListActivity.class));
+                startActivityForResult(new Intent(CreateAccountFormActivity.this, SchemeListActivity.class), 0);
             }
         });
     }
@@ -90,19 +104,19 @@ public class CreateAccountFormActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.create, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
         if(id == R.id.ic_accept) {
-            CheckAndSetErrors();
+            if(CheckAndSetErrors() == true) {
+                database.insertAccount(name.getText().toString(), Schemes.getStringValueOfTypeSwitch(allDaySwitch.getValue()), positionOfScheme, strColor, desc.getText().toString());
+                finish();
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -115,6 +129,7 @@ public class CreateAccountFormActivity extends AppCompatActivity {
             public void onColorSelected(int color) {
                 selectedColor = color;
                 head.setBackgroundColor(selectedColor);
+                strColor = String.format("#%06X", 0xFFFFFF & selectedColor);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     Window window = getWindow();
@@ -127,26 +142,44 @@ public class CreateAccountFormActivity extends AppCompatActivity {
         dialog.show(getFragmentManager(), "color_dialog_test");
 
     }
-    //TODO: opravit Snackbar. Zobrazuje se chybně
-    public void CheckAndSetErrors() {
+    public boolean CheckAndSetErrors() {
 
-        if(nameLayout.getError() != null) {
-            Snackbar.make(getCurrentFocus(), "Povinné položky nejsou vyplněny správně", Snackbar.LENGTH_LONG).show();
-        }
+        boolean isOk = true;
 
         if(name.getText().length() == 0) {
+            isOk = false;
             nameLayout.setError("Vyplňte název");
         } else {
             nameLayout.setErrorEnabled(false);
         }
 
+        if(positionOfScheme == -1) {
+            isOk = false;
+            schemeLayout.setError("Zvolte pracoviště");
+        } else {
+            schemeLayout.setErrorEnabled(false);
+        }
+
+        return isOk;
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-  //      button.setEnabled(true);
-        button.setAlpha(1);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+
+        if(resultCode == 1) {
+            positionOfScheme = data.getIntExtra("positionOfScheme", -1);
+
+            ArrayList<Schemes> schemes = Schemes.createList();
+
+            scheme.setText(Schemes.getStringArray().get(positionOfScheme));
+            allDaySwitch.setElements(schemes.get(positionOfScheme).getTypesNames(schemes.get(positionOfScheme).getNumberOfSchemes()));
+            allDaySwitch.setValue(0);
+            allDaySwitch.setEnabled(true);
+            allDaySwitch.setAlpha(1f);
+        }
+
 
     }
 }

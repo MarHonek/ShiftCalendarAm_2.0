@@ -22,7 +22,7 @@ public class Database extends SQLiteOpenHelper {
     static int databaseVersion = 4;
     static String databaseName = "DBCalendar";
 
-    String createTableAccounts = "CREATE TABLE Accounts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, shiftSchemeGroup TEXT, shiftSchemeID INTEGER, color TEXT)";
+    String createTableAccounts = "CREATE TABLE Accounts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, shiftSchemeGroup TEXT, shiftSchemeID INTEGER, color TEXT, desc TEXT)";
 
     String createTable2 = "CREATE TABLE alternative ( " +
             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -93,7 +93,7 @@ public class Database extends SQLiteOpenHelper {
 
     }
 
-    public void insertAccount(String name, String shiftSchemeGroup, int shiftSchemeID, String color) {
+    public void insertAccount(String name, String shiftSchemeGroup, int shiftSchemeID, String color, String desc) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -102,6 +102,7 @@ public class Database extends SQLiteOpenHelper {
         values.put("shiftSchemeGroup", shiftSchemeGroup);
         values.put("shiftSchemeID", shiftSchemeID);
         values.put("color", color);
+        values.put("desc", desc);
 
         db.insert("Accounts",null, values);
 
@@ -392,7 +393,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public void repairAccountTable(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE Accounts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, shiftSchemeGroup TEXT, shiftSchemeID INTEGER, color TEXT)");
+        db.execSQL("CREATE TABLE Accounts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, shiftSchemeGroup TEXT, shiftSchemeID INTEGER, color TEXT, desc TEXT)");
 
         String query = "SELECT * FROM shifts";
         Cursor cursor = db.rawQuery(query, null);
@@ -407,7 +408,7 @@ public class Database extends SQLiteOpenHelper {
 
                 String hexColor = String.format("#%06X", (0xFFFFFF & color));
 
-                db.execSQL("INSERT INTO Accounts (id, title, shiftSchemeGroup, shiftSchemeID, color) VALUES ("+id+", '"+name+"', '"+shiftSchemeGroup+"', "+shiftSchemeID+", '"+hexColor+"')");
+                db.execSQL("INSERT INTO Accounts (id, title, shiftSchemeGroup, shiftSchemeID, color, desc) VALUES ("+id+", '"+name+"', '"+shiftSchemeGroup+"', "+shiftSchemeID+", '"+hexColor+"', '')");
             } while (cursor.moveToNext());
         }
         db.execSQL("DROP TABLE shifts");

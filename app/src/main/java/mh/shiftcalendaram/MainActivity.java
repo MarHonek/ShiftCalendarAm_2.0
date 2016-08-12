@@ -42,8 +42,9 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (id){
                     case R.id.home:
-                        startActivity(new Intent(MainActivity.this, ShiftListActivity.class));
                         drawerLayout.closeDrawers();
+                        startActivity(new Intent(MainActivity.this, ShiftListActivity.class));
+
                         break;
                     case R.id.settings:
                         startActivity(new Intent(MainActivity.this, CreateAccountFormActivity.class));

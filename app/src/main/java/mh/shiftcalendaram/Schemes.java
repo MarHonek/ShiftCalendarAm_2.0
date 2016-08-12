@@ -1,5 +1,7 @@
 package mh.shiftcalendaram;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -42,7 +44,7 @@ public class Schemes {
         numberOfShifts = 4;
     }
 
-    public int getNumberOfShits()
+    public int getNumberOfSchemes()
     {
         return numberOfShifts;
     }
@@ -97,6 +99,14 @@ public class Schemes {
     }
 
 
+    public ArrayList<String> getTypesNames(int typeCount) {
+        ArrayList<String> typeNames = new ArrayList<>();
+        char types = 'A';
+        for (int i = 0; i < typeCount;i++) {
+            typeNames.add(String.valueOf((char) (types+i)));
+        }
+        return typeNames;
+    }
 
     public static ArrayList<String> getStringArray()
     {
@@ -107,6 +117,27 @@ public class Schemes {
             getString.add(pernament.get(i).getTitle());
         }
         return getString;
+    }
+
+    public static String getStringValueOfTypeSwitch(int value) {
+        String strValue = "";
+        switch (value) {
+            case 0:
+                strValue = "A";
+                break;
+            case 1:
+                strValue = "B";
+                break;
+
+            case 2:
+                strValue = "C";
+                break;
+
+            case 3:
+                strValue = "D";
+                break;
+        }
+        return strValue;
     }
 
     public String getABCDShifts(String radio)
