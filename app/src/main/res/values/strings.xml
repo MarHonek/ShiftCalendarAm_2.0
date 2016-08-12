@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Kalendář AM</string>
+    <string name="title_activity_symbol_manage">Správa směn</string>
+    <string name="title_activity_account_list">AccountListActivity</string>
+    <string name="ic_accept">Potvrdit</string>
+
+
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+    <string name="title_activity_create_shift_form">CreateShiftFormActivity</string>
+    <string name="create_shift_edit_text_name">Název</string>
+    <string name="create_shift_edit_text_short_name">Zkratka</string>
+    <string name="create_shift_allDay_label">Celý den</string>
+    <string name="create_shift_work_start_label">Začátek</string>
+    <string name="create_shift_work_end_label">Konec</string>
+    <string name="create_shift_title">Vytvoření směny</string>
+    <string name="create_shift_desc_label">Poznámka</string>
+    <string name="title_activity_create_account_form">CreateAccountFormActivity</string>
+
+
+    <string-array name="types_array">
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+        <item>D</item>
+    </string-array>
+
+    <string-array name="time_array">
+        <item>10 minut před</item>
+        <item>15 minut před</item>
+        <item>30 minut před</item>
+        <item>45 minut před</item>
+        <item>1 hodinu před</item>
+        <item>1,5 hodiny před</item>
+        <item>2 hodiny před</item>
+        <item>3 hodiny před</item>
+        <item>Vlastní</item>
+    </string-array>
+    <string name="title_activity_scheme_list">SchemeListActivity</string>
+</resources>

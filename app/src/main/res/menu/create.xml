@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="fss.calendar.workshiftcalendar.ScreenSlideActivity" >
+
+
+    <item
+        android:id="@+id/ic_accept"
+        android:icon="@drawable/ic_accept"
+        android:title="@string/ic_accept"
+        app:showAsAction="always"/>
+
+</menu>

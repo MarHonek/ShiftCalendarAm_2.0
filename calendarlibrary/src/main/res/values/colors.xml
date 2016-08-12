@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorCalendarGrid">#CCCCCC</color>
+    <color name="colorCalendarUnCheckable">#FCFCFC</color>
+    <color name="colorCalendarDefaultCheckable">#EEEEEE</color>
+    <color name="colorCalendarText">#000000</color>
+    <color name="colorCalendarBackGround">#FFFFFF</color>
+    <color name="colorWeekLabelBackgroundColor">#FFFFFF</color>
+    <color name="colorUnCheckableText">#EEEEEE</color>
+    <color name="colorTodayIndicator">#FF0000</color>
+</resources>
