@@ -74,7 +74,7 @@ public class CreateShiftFormActivity extends AppCompatActivity {
         head = (AppBarLayout)findViewById(R.id.create_shift_head);
         palette = (ImageView)findViewById(R.id.imageView_palette);
 
-        selectedColor = ContextCompat.getColor(getBaseContext(), R.color.red);
+        selectedColor = ContextCompat.getColor(getBaseContext(), R.color.colorPrimary);
         strColor = String.format("#%06X", 0xFFFFFF & selectedColor);
         int[] mColors = getResources().getIntArray(R.array.rainbow);
 

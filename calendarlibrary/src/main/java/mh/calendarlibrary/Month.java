@@ -81,6 +81,10 @@ class Month implements Parcelable {
 		mTotalDays = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		calendar.set(year, month, 1);
 		int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+		dayOfWeek -= 1;
+		if(dayOfWeek == 0) {
+			dayOfWeek = 7;
+		}
 		mDelta = dayOfWeek - 1;
 		calendar.add(Calendar.DATE, -mDelta);
 
@@ -90,6 +94,7 @@ class Month implements Parcelable {
 	/* add month day into list */
 	private void addMonthDay(int year, int month, int day) {
 		Calendar calendar = generateWorkingCalendar(year, month, day);
+		int s = calendar.get(Calendar.DATE);
 
 		for (int i = 0; i < mTotalWeeks; i++) {
 			for (int j = 0; j < DAYS_IN_WEEK; j++) {

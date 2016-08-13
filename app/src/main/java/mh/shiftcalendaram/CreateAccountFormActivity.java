@@ -71,7 +71,7 @@ public class CreateAccountFormActivity extends AppCompatActivity {
         allDaySwitch.setEnabled(false);
 
         //TODO: upravit barvy v pickeru, a vychozí barvu
-        selectedColor = ContextCompat.getColor(getBaseContext(), R.color.red);
+        selectedColor = ContextCompat.getColor(getBaseContext(), R.color.colorPrimary);
         strColor = String.format("#%06X", 0xFFFFFF & selectedColor);
         int[] mColors = getResources().getIntArray(R.array.rainbow);
 

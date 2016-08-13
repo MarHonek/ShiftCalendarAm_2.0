@@ -5,8 +5,8 @@ public class AccountTemplate extends ListTemplate{
 
 	int shiftSchemeID;
 
-	public AccountTemplate(String name, String shiftSchemeGroup, int shiftSchemeID, String color) {
-		super(name, shiftSchemeGroup, color);
+	public AccountTemplate(String name, String shiftSchemeGroup, int shiftSchemeID, String color, String desc) {
+		super(name, shiftSchemeGroup, color, desc);
 		this.shiftSchemeID = shiftSchemeID;
 	}
 

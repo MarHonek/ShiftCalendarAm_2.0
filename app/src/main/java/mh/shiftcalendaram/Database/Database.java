@@ -6,11 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Color;
+import android.util.Log;
 
 import java.util.ArrayList;
 
 import mh.calendarlibrary.MonthView;
 import mh.shiftcalendaram.Templates.AccountTemplate;
+import mh.shiftcalendaram.Templates.ListTemplate;
 import mh.shiftcalendaram.Templates.ShiftTemplate;
 
 /**
@@ -53,7 +55,6 @@ public class Database extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-
         db.execSQL(createTableAccounts);
         db.execSQL(createTable2);
         db.execSQL(createTable3);
@@ -85,6 +86,7 @@ public class Database extends SQLiteOpenHelper {
         }
         else
         {
+            Log.v("HOlo", "hmm");
             db.execSQL("DROP TABLE IF EXISTS Accounts");
             db.execSQL("DROP TABLE IF EXISTS alternative");
             db.execSQL("DROP TABLE IF EXISTS notes");
@@ -105,7 +107,7 @@ public class Database extends SQLiteOpenHelper {
         values.put("desc", desc);
 
         db.insert("Accounts",null, values);
-
+        Log.v("wdwd", "OK");
         db.close();
     }
 
@@ -243,12 +245,11 @@ public class Database extends SQLiteOpenHelper {
 
         String query = "SELECT  * FROM Accounts";
 
-        ArrayList<AccountTemplate> shifts = new ArrayList<>();
-        // ArrayList<String> list = StaticShiftTemplate.getStringArray();
+        ArrayList<AccountTemplate> accounts = new ArrayList<>();
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 
-        AccountTemplate shift = null;
+        AccountTemplate account = null;
         if (cursor.moveToFirst()) {
             do {
 
@@ -256,13 +257,14 @@ public class Database extends SQLiteOpenHelper {
                 String shiftSchemeGroup = cursor.getString(2);
                 int shiftSchemeID = cursor.getInt(3);
                 String color = cursor.getString(4);
-
-                shift = new AccountTemplate(name, shiftSchemeGroup, shiftSchemeID, color);
-                shifts.add(shift);
+                String desc = cursor.getString(5);
+                Log.v("wd", "ddw");
+                account = new AccountTemplate(name, shiftSchemeGroup, shiftSchemeID, color, desc);
+                accounts.add(account);
             } while (cursor.moveToNext());
         }
-
-        return shifts;
+        Log.v("dw", "dwd");
+        return accounts;
     }
 
     public ArrayList<ShiftTemplate> getShifts() {
@@ -277,8 +279,9 @@ public class Database extends SQLiteOpenHelper {
                 String name = cursor.getString(1);
                 String shortName = cursor.getString(2);
                 String color = cursor.getString(3);
+                String desc  = "dw";
 
-                list.add(new ShiftTemplate(name, shortName, color));
+                list.add(new ShiftTemplate(name, shortName, color, desc));
             } while (cursor.moveToNext());
         }
         return list;

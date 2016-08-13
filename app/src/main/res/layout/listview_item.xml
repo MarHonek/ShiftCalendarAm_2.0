@@ -20,7 +20,7 @@
             android:textColor="#FFFFFF"
             android:gravity="center"
             android:text="LTL"
-            android:id="@+id/textView2" />
+            android:id="@+id/textView_shift_list_shortName" />
     </LinearLayout>
 
     <LinearLayout
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:text="Ranní"
-            android:id="@+id/textView_shift_listview_title"
+            android:id="@+id/textView_shift_listview_name"
             android:textColor="@color/abc_primary_text_disable_only_material_light" />
 
         <TextView

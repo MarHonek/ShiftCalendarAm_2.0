@@ -23,7 +23,7 @@ public class ShiftListActivity extends AppCompatActivity {
 
     ListView listView;
     ListViewAdapter adapter;
-    ArrayList<ListTemplate> shifts;
+    ArrayList<ShiftTemplate> shifts;
     Database database;
 
 
@@ -37,16 +37,11 @@ public class ShiftListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        database = new Database(ShiftListActivity.this);
+        shifts = database.getShifts();
 
-     /*   for (int i = 0; i < 5;i++) {
-            database.insertShifts("ewfw", "A",  "#FF0000");
-        }*/
-        database.getShifts();
-
-      /*  listView = (ListView)findViewById(R.id.listView_sifts);
+        listView = (ListView)findViewById(R.id.listView_sifts);
         adapter = new ListViewAdapter(ShiftListActivity.this, shifts);
-        listView.setAdapter(adapter);*/
+        listView.setAdapter(adapter);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

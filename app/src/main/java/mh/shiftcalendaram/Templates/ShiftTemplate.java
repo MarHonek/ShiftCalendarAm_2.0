@@ -4,8 +4,8 @@ public class ShiftTemplate extends ListTemplate {
 
 
 
-	public ShiftTemplate(String name, String shortName, String color) {
-		super(name, shortName, color);
+	public ShiftTemplate(String name, String shortName, String color, String desc) {
+		super(name, shortName, color, desc);
 	}
 
 	public String getShortName() {

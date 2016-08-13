@@ -176,4 +176,9 @@ public final class MonthDay implements Parcelable {
 		return mCalendar;
 	}
 
+
+	public String getMonthStr(int month) {
+		String[] monthList = new String[] {"Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"};
+		return monthList[month];
+	}
 }
