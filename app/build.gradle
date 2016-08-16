@@ -27,4 +27,9 @@ dependencies {
     compile 'com.android.support:design:24.1.1'
     compile 'org.xdty.preference:color-picker:0.0.4'
     compile 'org.honorato.multistatetogglebutton:multistatetogglebutton:0.2.2'
+    compile('com.mikepenz:materialdrawer:5.4.0@aar') {
+        transitive = true
+    }
+    compile 'com.mikepenz:google-material-typeface:2.2.0.3.original@aar'
+    compile 'joda-time:joda-time:2.9.4'
 }

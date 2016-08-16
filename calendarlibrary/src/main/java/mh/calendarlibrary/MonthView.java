@@ -205,7 +205,7 @@ public final class MonthView extends View {
 		}
 
 		mPaint.setTextSize(mShiftTextSize);
-		canvas.drawText("A", rect.centerX(), rect.centerY() + mShiftTextSize/2, mPaint);
+		canvas.drawText(monthDay.getShift(), rect.centerX(), rect.centerY() + mShiftTextSize/2, mPaint);
 	}
 
 	/* draw circle for selected day */

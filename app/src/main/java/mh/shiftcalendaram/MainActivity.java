@@ -11,12 +11,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.MiniProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
@@ -30,12 +45,11 @@ import mh.shiftcalendaram.Templates.AccountTemplate;
 
 public class MainActivity extends AppCompatActivity implements CalendarView.OnDatePickListener {
 
-    DrawerLayout drawerLayout;
     CalendarView calendarView;
     Toolbar toolbar;
 
-    LinearLayout drawerCircle;
-    TextView drawerName, drawerShortName, drawerCircleText;
+    Drawer result;
+
 
     Database database;
     ArrayList<AccountTemplate> accounts;
@@ -46,75 +60,54 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setShadows();
+
+
+        IconicsDrawable d = new IconicsDrawable(MainActivity.this, GoogleMaterial.Icon.gmd_person).sizeDp(100);
+        d.color(Color.WHITE);
+        d.backgroundColor(getResources().getColor(R.color.colorPrimary));
+        d.paddingDp(25);
+        d.alpha(230);
+        AccountHeader headerResult = new AccountHeaderBuilder()
+                .withActivity(this)
+                .withHeaderBackground(R.drawable.drawer_wallpaper_small)
+                .addProfiles(
+                        new ProfileDrawerItem().withName("Mike Penz").withEmail("mikepenz@gmail.com").withIcon(d)
+                )
+                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+                    @Override
+                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
+                        Log.v("dw", "OK");
+                        return true;
+                    }
+                })
+                .build();
+
+
+        result = new DrawerBuilder()
+                .withAccountHeader(headerResult)
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .addDrawerItems(
+                        new PrimaryDrawerItem().withName("dqw"),
+                        new PrimaryDrawerItem().withName("dwdw"),
+                        new SecondaryDrawerItem().withName("dwq")
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+
+                        return true;
+                    }
+                })
+                .build();
+
+        result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
 
         calendarView = (CalendarView)findViewById(R.id.calendar_view);
         calendarView.setOnDatePickListener(this);
 
-        drawerLayout = (DrawerLayout)findViewById(R.id.drawer);
-
-
         database = new Database(MainActivity.this);
         accounts = database.getAccounts();
-
-        NavigationView navigationView = (NavigationView)findViewById(R.id.navigation_view);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
-
-                int id = menuItem.getItemId();
-
-                switch (id){
-                    case R.id.home:
-                        drawerLayout.closeDrawers();
-                        startActivity(new Intent(MainActivity.this, ShiftListActivity.class));
-
-                        break;
-                    case R.id.settings:
-                        startActivity(new Intent(MainActivity.this, CreateAccountFormActivity.class));
-                        break;
-                    case R.id.trash:
-                        Toast.makeText(getApplicationContext(),"Trash",Toast.LENGTH_SHORT).show();
-                        drawerLayout.closeDrawers();
-                        break;
-                    case R.id.logout:
-                        finish();
-
-                }
-                return true;
-            }
-        });
-
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.drawer_open,R.string.drawer_close){
-
-            @Override
-            public void onDrawerClosed(View v){
-                super.onDrawerClosed(v);
-            }
-
-            @Override
-            public void onDrawerOpened(View v) {
-                super.onDrawerOpened(v);
-            }
-        };
-        drawerLayout.addDrawerListener(actionBarDrawerToggle);
-        actionBarDrawerToggle.syncState();
-
-        View header = navigationView.getHeaderView(0);
-
-        drawerName = (TextView)header.findViewById(R.id.drawer_name);
-        drawerShortName = (TextView)header.findViewById(R.id.drawer_short_name);
-        drawerCircleText = (TextView)header.findViewById(R.id.textView_circle_text);
-        drawerCircle = (LinearLayout)header.findViewById(R.id.linearLayout_circle);
-
-        Log.v("dwq", String.valueOf(accounts.size()));
-        if(accounts.size() > 0) {
-            drawerName.setText(accounts.get(0).getName());
-            drawerShortName.setText(Schemes.getStringArray().get(accounts.get(0).getShiftSchemeID()));
-            drawerCircleText.setText(accounts.get(0).getShiftSchemeGroup());
-            GradientDrawable background = (GradientDrawable) drawerCircle.getBackground();
-            background.setColor(Color.parseColor(accounts.get(0).getColorHex()));
-        }
 
 
 
@@ -150,5 +143,15 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
         int month = monthDay.getCalendar().get(Calendar.MONTH);
         toolbar.setTitle(monthDay.getMonthStr(month) + " " + String.valueOf(year));
 
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (result != null && result.isDrawerOpen()) {
+            result.closeDrawer();
+        } else {
+            super.onBackPressed();
+        }
     }
 }
