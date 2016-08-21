@@ -25,6 +25,9 @@ class Month implements Parcelable {
 	private boolean mIsMonthOfToday;
 	private List<MonthDay> mMonthDayList = new ArrayList<>();
 
+	int schemeID;
+	String schemeGroup;
+
 	/**
 	 * Parcelable Stuff.
 	 */
@@ -43,8 +46,12 @@ class Month implements Parcelable {
 		mYear = year;
 		mMonth = month;
 		mDay = day;
+	}
 
-		addMonthDay(year, month, day);
+	protected void setScheme(int schemeID, String schemeGroup) {
+		this.schemeID = schemeID;
+		this.schemeGroup = schemeGroup;
+		addMonthDay(mYear, mMonth, mDay);
 	}
 
 	@Override
@@ -57,6 +64,7 @@ class Month implements Parcelable {
 		dest.writeInt(mYear);
 		dest.writeInt(mMonth);
 		dest.writeInt(mDay);
+		dest.writeInt(schemeID);
 	}
 
 	/**
@@ -96,9 +104,15 @@ class Month implements Parcelable {
 		Calendar calendar = generateWorkingCalendar(year, month, day);
 		int s = calendar.get(Calendar.DATE);
 
+		Schemes schemes = new Schemes(calendar.getTimeInMillis(), schemeID, "A");
+
+
+
+
 		for (int i = 0; i < mTotalWeeks; i++) {
 			for (int j = 0; j < DAYS_IN_WEEK; j++) {
 				MonthDay monthDay = new MonthDay(calendar);
+				monthDay.setShift(schemes.getShift());
 				int currentDays = i * DAYS_IN_WEEK + j;
 				monthDay.setCheckable(!(currentDays < mDelta ||
 					currentDays >= mTotalDays + mDelta));
@@ -109,6 +123,7 @@ class Month implements Parcelable {
 				}
 				mMonthDayList.add(monthDay);
 				calendar.add(Calendar.DATE, 1);
+				schemes.incrementDay();
 			}
 		}
 	}

@@ -32,4 +32,5 @@ dependencies {
     }
     compile 'com.mikepenz:google-material-typeface:2.2.0.3.original@aar'
     compile 'joda-time:joda-time:2.9.4'
+    compile 'com.github.traex.expandablelayout:library:1.3'
 }

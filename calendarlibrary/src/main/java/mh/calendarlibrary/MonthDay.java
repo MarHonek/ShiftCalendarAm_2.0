@@ -24,6 +24,8 @@ public final class MonthDay implements Parcelable {
 	private Calendar mCalendar;
 	private Schemes schemes;
 
+	String shift;
+
 	/**
 	 * The constructor of month day.
 	 *
@@ -68,9 +70,10 @@ public final class MonthDay implements Parcelable {
 	private void copy(Calendar calendar) {
 		mCalendar = Calendar.getInstance();
 		mCalendar.setTimeInMillis(calendar.getTimeInMillis());
+	}
 
-		schemes = new Schemes(0, "A");
-		schemes.setTimeInMillis(calendar.getTimeInMillis());
+	protected void setShift(String shift) {
+		this.shift = shift;
 	}
 
 	/* to check if the given calendar was today */
@@ -94,7 +97,7 @@ public final class MonthDay implements Parcelable {
 
 
 	protected String getShift() {
-		return schemes.getShift();
+		return shift;
 	}
 
 	/**

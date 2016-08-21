@@ -46,6 +46,7 @@ public final class MonthView extends View {
 		super(context);
 
 		mMonth = month;
+		mMonth.setScheme(calendarView.getSchemeID(), calendarView.getSchemeGroup());
 		mCalendarView = calendarView;
 		init();
 	}

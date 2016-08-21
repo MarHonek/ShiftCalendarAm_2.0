@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -33,6 +34,11 @@ public class CalendarView extends LinearLayout {
 	private OnDatePickListener mOnDatePickListener;
 	private boolean mIsChangedByUser;
 
+	int schemeID;
+	String schemeGroup;
+
+	AttributeSet attrs;
+
 	public CalendarView(Context context) {
 		this(context, null);
 		mContext = context;
@@ -45,6 +51,7 @@ public class CalendarView extends LinearLayout {
 
 	public CalendarView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
+		this.attrs = attrs;
 		mContext = context;
 		init(attrs);
 	}
@@ -90,6 +97,8 @@ public class CalendarView extends LinearLayout {
 		});
 	}
 
+
+
 	/* page change listener */
 	private ViewPager.OnPageChangeListener mPageListener = new ViewPager.OnPageChangeListener() {
 		@Override
@@ -112,6 +121,14 @@ public class CalendarView extends LinearLayout {
 
 		}
 	};
+
+	public void reset() {
+		backToToday();
+		mAdapter = new MonthPagerAdapter(getContext(), this);
+		mPager.setAdapter(mAdapter);
+		mPager.addOnPageChangeListener(mPageListener);
+		mPager.setCurrentItem(mAdapter.getIndexOfCurrentMonth());
+	}
 
 	/* get color with given color resource id */
 	private int getColor(@ColorRes int resId) {
@@ -278,6 +295,21 @@ public class CalendarView extends LinearLayout {
 		mAdapter.setSelectedDay(position, selectedDay);
 		mPager.setCurrentItem(position, true);
 	}
+
+
+	public void setAccount(int schemeID, String schemeGroup) {
+		this.schemeGroup = schemeGroup;
+		this.schemeID = schemeID;
+	}
+
+	public int getSchemeID() {
+		return schemeID;
+	}
+
+	public String getSchemeGroup() {
+		return schemeGroup;
+	}
+
 
 	/**
 	 * Show previous month page with selected day.

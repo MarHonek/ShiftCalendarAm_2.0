@@ -30,15 +30,18 @@ public class Schemes {
 
     String[] shiftList;
 
+    int shiftIndex;
+
     /**
      * The default constructor of lunar, create an empty Lunar, don't
      * forget to use {@link #setDate} or {@link #setTimeInMillis}.
      */
-    public Schemes(int positionOfScheme, String schemeType) {
+    public Schemes(long milisec, int positionOfScheme, String schemeType) {
         this.positionOfScheme = positionOfScheme;
         this.schemeType = schemeType;
         ArrayList<Schemes> schemes = Schemes.createList();
-        shiftList= getShiftsList(schemes.get(0).getShiftA());
+        shiftList= getShiftsList(schemes.get(positionOfScheme).getABCDShifts(schemeType));
+        init(milisec);
     }
 
     /**
@@ -73,20 +76,24 @@ public class Schemes {
 
     /* init lunar calendar with millisecond */
     private void init(long millisec) {
-        Calendar c = Calendar.getInstance();
-        c.setTimeInMillis(millisec);
-        int t = c.get(Calendar.YEAR);
-        int m = c.get(Calendar.MONTH);
-        int d = c.get(Calendar.DAY_OF_MONTH);
         int days = getDaysCountBetweenDates(millisec);
-        Log.v("dwd", String.valueOf(days));
 
         while(days >= shiftList.length) {
             days -= shiftList.length;
         }
         shift = shiftList[days];
+        shiftIndex = days;
 
 
+    }
+
+    public void incrementDay() {
+        shiftIndex++;
+        if(shiftIndex >= shiftList.length) {
+            shiftIndex = 0;
+        }
+
+        shift = shiftList[shiftIndex];
     }
 
     private String[] getShiftsList(String shifts) {
@@ -100,14 +107,6 @@ public class Schemes {
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
         today.set(Calendar.MILLISECOND, 0);
-
-        Calendar dayCountFrom = Calendar.getInstance();
-        dayCountFrom.set(Calendar.HOUR_OF_DAY, 0);
-        dayCountFrom.set(Calendar.MINUTE, 0);
-        dayCountFrom.set(Calendar.MILLISECOND, 0);
-        dayCountFrom.set(Calendar.DAY_OF_MONTH, 1);
-        dayCountFrom.set(Calendar.MONTH,0);
-        dayCountFrom.set(Calendar.YEAR, 2014);
 
 
         DateTime start = new DateTime(2014, 1, 1, 0, 0, 0, 0);

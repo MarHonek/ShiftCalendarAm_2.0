@@ -37,6 +37,9 @@ final class MonthPagerAdapter extends PagerAdapter {
 		mMinMonth = new Month(1900, 0, 1);
 		mMaxMonth = new Month(2100, 11, 1);
 
+		mMinMonth.setScheme(calendarView.getSchemeID(), calendarView.getSchemeGroup());
+		mMaxMonth.setScheme(calendarView.getSchemeID(), calendarView.getSchemeGroup());
+
 		calculateRange(mMinMonth, mMaxMonth);
 	}
 
@@ -155,6 +158,7 @@ final class MonthPagerAdapter extends PagerAdapter {
 	protected void resetSelectedDay(int pagerPosition) {
 		setSelectedDay(pagerPosition, 0);
 	}
+
 
 	/**
 	 * Set date range of lunar view.

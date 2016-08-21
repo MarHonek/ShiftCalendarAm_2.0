@@ -93,7 +93,9 @@ public class CreateAccountFormActivity extends AppCompatActivity {
         scheme.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(new Intent(CreateAccountFormActivity.this, SchemeListActivity.class), 0);
+                Intent intent = new Intent(CreateAccountFormActivity.this, SchemeListActivity.class);
+                intent.putExtra("showSchemeGroup", false);
+                startActivityForResult(intent, 0);
             }
         });
     }
