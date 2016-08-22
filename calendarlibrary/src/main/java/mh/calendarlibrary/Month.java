@@ -25,7 +25,7 @@ class Month implements Parcelable {
 	private boolean mIsMonthOfToday;
 	private List<MonthDay> mMonthDayList = new ArrayList<>();
 
-	int schemeID;
+	int schemeID = -1;
 	String schemeGroup;
 
 	/**
@@ -102,12 +102,8 @@ class Month implements Parcelable {
 	/* add month day into list */
 	private void addMonthDay(int year, int month, int day) {
 		Calendar calendar = generateWorkingCalendar(year, month, day);
-		int s = calendar.get(Calendar.DATE);
 
 		Schemes schemes = new Schemes(calendar.getTimeInMillis(), schemeID, "A");
-
-
-
 
 		for (int i = 0; i < mTotalWeeks; i++) {
 			for (int j = 0; j < DAYS_IN_WEEK; j++) {

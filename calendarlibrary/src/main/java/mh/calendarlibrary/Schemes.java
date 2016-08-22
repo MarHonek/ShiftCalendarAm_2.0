@@ -37,11 +37,16 @@ public class Schemes {
      * forget to use {@link #setDate} or {@link #setTimeInMillis}.
      */
     public Schemes(long milisec, int positionOfScheme, String schemeType) {
-        this.positionOfScheme = positionOfScheme;
-        this.schemeType = schemeType;
         ArrayList<Schemes> schemes = Schemes.createList();
-        shiftList= getShiftsList(schemes.get(positionOfScheme).getABCDShifts(schemeType));
-        init(milisec);
+        if(positionOfScheme == -1) {
+            shiftList = new String[] {""};
+            init(milisec);
+        } else {
+            this.positionOfScheme = positionOfScheme;
+            this.schemeType = schemeType;
+            shiftList = getShiftsList(schemes.get(positionOfScheme).getABCDShifts(schemeType));
+            init(milisec);
+        }
     }
 
     /**

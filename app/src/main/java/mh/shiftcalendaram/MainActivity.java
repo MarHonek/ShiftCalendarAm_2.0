@@ -6,10 +6,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
-import android.support.design.widget.NavigationView;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -18,9 +14,6 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -28,8 +21,6 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
-import com.mikepenz.materialdrawer.model.MiniProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
@@ -37,7 +28,6 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
-import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
@@ -62,8 +52,8 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
     ArrayList<IProfile> profiles;
 
 
-    SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-    SharedPreferences.Editor editor = sharedPref.edit();
+    SharedPreferences sharedPref;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,10 +63,8 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
         setSupportActionBar(toolbar);
         setShadows();
 
-
-        int accountIndex = sharedPref.getInt("account", -1);
-        int schemeIndex = sharedPref.getInt("scheme", 0);
-        String schemeGroup = sharedPref.getString("schemeGroup", "");
+        sharedPref = getPreferences(Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
 
         data = new Database(MainActivity.this);
         profiles = getProfiles(data);
@@ -96,20 +84,18 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
                     public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
                         if (profile.getIdentifier() == 1000) {
                             startActivity(new Intent(MainActivity.this, CreateAccountFormActivity.class));
+                        } else {
+                            editor.putInt("account", (int) profile.getIdentifier());
+                            editor.commit();
+
+                            calendarView.reset();
+
+                           /* ArrayList<AccountTemplate> accounts = data.getAccounts();
+                            calendarView.setAccount(accounts.get((int) profile.getIdentifier()).getShiftSchemeID(), accounts.get((int) profile.getIdentifier()).getShiftSchemeGroup());
+                            */
+                            result.resetDrawerContent();
+                            result.closeDrawer();
                         }
-
-                        editor.putInt("account", (int) profile.getIdentifier());
-                        editor.putInt("scheme", -1);
-                        editor.putString("schemeGroup", "-");
-                        editor.commit();
-
-                        calendarView.reset();
-
-                        ArrayList<AccountTemplate> accounts = data.getAccounts();
-                        calendarView.setAccount(accounts.get((int) profile.getIdentifier()).getShiftSchemeID(), accounts.get((int) profile.getIdentifier()).getShiftSchemeGroup());
-
-                        result.resetDrawerContent();
-                        result.closeDrawer();
                         return true;
                     }
                 })
@@ -128,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        Log.v("positiin", String.valueOf(position));
+
                         switch (position) {
                             case 1:
                                 startActivity(new Intent(MainActivity.this, SchemeListActivity.class));
@@ -144,14 +130,17 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
         calendarView = (CalendarView) findViewById(R.id.calendar_view);
 
-        if (accountIndex <= -1) {
-            ArrayList<AccountTemplate> accounts = data.getAccounts();
-            calendarView.setAccount(accounts.get(accountIndex).getShiftSchemeID(), accounts.get(accountIndex).getShiftSchemeGroup());
-        } else {
-            calendarView.setAccount(schemeIndex, schemeGroup);
-        }
-        calendarView.setOnDatePickListener(this);
+        int accountIndex = sharedPref.getInt("account", -1);
 
+        ArrayList<AccountTemplate> accounts = data.getAccounts();
+        if(accountIndex == -1) {
+            calendarView.setAccount(-1, "A");
+        }
+        else {
+            calendarView.setAccount(accounts.get(accountIndex).getShiftSchemeID(), accounts.get(accountIndex).getShiftSchemeGroup());
+        }
+
+        calendarView.setOnDatePickListener(this);
 
     }
 
@@ -197,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
         }
     }
 
-    @Override
+/*    @Override
     protected void onResume() {
         super.onResume();
         profiles = getProfiles(data);
@@ -207,6 +196,16 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
                 new ProfileSettingDrawerItem().withName("Správa kalendářů").withIcon(GoogleMaterial.Icon.gmd_settings).withIdentifier(1001)
         );
 
+       /* int accountIndex = sharedPref.getInt("account", -1);
+        ArrayList<AccountTemplate> accounts = data.getAccounts();
+        calendarView.setAccount(accounts.get(accountIndex).getShiftSchemeID(), accounts.get(accountIndex).getShiftSchemeGroup());
+    }*/
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Log.v("dwd", "okerrrrrrrrrrrrrrr");
 
     }
 
@@ -228,4 +227,6 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
 
         return profiles;
     }
+
+
 }

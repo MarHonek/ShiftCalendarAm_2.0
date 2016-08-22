@@ -2,6 +2,7 @@ package mh.calendarlibrary;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.util.Calendar;
 
@@ -98,6 +99,7 @@ public final class MonthDay implements Parcelable {
 
 	protected String getShift() {
 		return shift;
+
 	}
 
 	/**
