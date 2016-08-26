@@ -1,19 +1,17 @@
-package mh.shiftcalendaram.Database;
+package mh.calendarlibrary.Database;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Color;
 import android.util.Log;
 
 import java.util.ArrayList;
 
 import mh.calendarlibrary.MonthView;
-import mh.shiftcalendaram.Templates.AccountTemplate;
-import mh.shiftcalendaram.Templates.ListTemplate;
-import mh.shiftcalendaram.Templates.ShiftTemplate;
+import mh.calendarlibrary.Templates.AccountTemplate;
+import mh.calendarlibrary.Templates.ShiftTemplate;
 
 /**
  * Created by Martin on 01.08.2016.

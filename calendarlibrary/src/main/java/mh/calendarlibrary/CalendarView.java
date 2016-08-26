@@ -34,8 +34,10 @@ public class CalendarView extends LinearLayout {
 	private OnDatePickListener mOnDatePickListener;
 	private boolean mIsChangedByUser;
 
+	int accountID = -1;
 	int schemeID;
 	String schemeGroup;
+
 
 	AttributeSet attrs;
 
@@ -167,18 +169,18 @@ public class CalendarView extends LinearLayout {
 	}
 
 	/**
-	 * Get the color of month view background.
+	 * Get the color of mMonth view background.
 	 *
-	 * @return color of month background
+	 * @return color of mMonth background
 	 */
 	protected int getMonthBackgroundColor() {
 		return ContextCompat.getColor(mContext, R.color.colorCalendarBackGround);
 	}
 
 	/**
-	 * Get the color uncheckable day view background.
+	 * Get the color uncheckable mDay view background.
 	 *
-	 * @return color of uncheckable day background
+	 * @return color of uncheckable mDay background
 	 */
 	protected int getMonthCheckableBackgroundColor() {
 		return ContextCompat.getColor(mContext ,R.color.colorCalendarDefaultCheckable);
@@ -187,9 +189,9 @@ public class CalendarView extends LinearLayout {
 
 
 	/**
-	 * Get the color uncheckable day view background.
+	 * Get the color uncheckable mDay view background.
 	 *
-	 * @return color of uncheckable day background
+	 * @return color of uncheckable mDay background
 	 */
 	protected int getMonthUncheckableBackgroundColor() {
 		return ContextCompat.getColor(mContext ,R.color.colorCalendarUnCheckable);
@@ -197,18 +199,18 @@ public class CalendarView extends LinearLayout {
 
 
 	/**
-	 * Get the text color of solar day.
+	 * Get the text color of solar mDay.
 	 *
-	 * @return text color of solar day
+	 * @return text color of solar mDay
 	 */
 	protected int getSolarTextColor() {
 		return R.color.colorCalendarText;
 	}
 
 	/**
-	 * Get the text color of lunar day.
+	 * Get the text color of lunar mDay.
 	 *
-	 * @return text color of lunar day
+	 * @return text color of lunar mDay
 	 */
 	protected int getShiftTextColor() {
 		return ContextCompat.getColor(mContext, R.color.colorCalendarText);
@@ -224,7 +226,7 @@ public class CalendarView extends LinearLayout {
 	}**/
 
 	/**
-	 * Get the color of uncheckable day.
+	 * Get the color of uncheckable mDay.
 	 *
 	 * @return uncheckable color
 	 */
@@ -242,16 +244,16 @@ public class CalendarView extends LinearLayout {
 	}
 
 	/**
-	 * Get the color of checked day.
+	 * Get the color of checked mDay.
 	 *
-	 * @return color of checked day
+	 * @return color of checked mDay
 	 */
 	/*int getCheckedDayBackgroundColor() {
 		return checkedDayBackgroundColor;
 	}*/
 
 	/**
-	 * Auto pick date when month changed or not.
+	 * Auto pick date when mMonth changed or not.
 	 *
 	 * @return true or false
 	 */
@@ -270,7 +272,7 @@ public class CalendarView extends LinearLayout {
 
 	/**
 	 * Set on date click listener. This listener will be invoked
-	 * when a day in month was picked.
+	 * when a mDay in mMonth was picked.
 	 *
 	 * @param l date pick listner
 	 */
@@ -281,7 +283,7 @@ public class CalendarView extends LinearLayout {
 	/**
 	 * Dispatch date pick listener. This will be invoked be {@link MonthView}
 	 *
-	 * @param monthDay month day
+	 * @param monthDay mMonth mDay
 	 */
 	protected void dispatchDateClickListener(MonthDay monthDay) {
 		if (mOnDatePickListener != null) {
@@ -289,7 +291,7 @@ public class CalendarView extends LinearLayout {
 		}
 	}
 
-	/* show the month page with specified pager position and selected day */
+	/* show the mMonth page with specified pager position and selected mDay */
 	private void showMonth(int position, int selectedDay) {
 		mIsChangedByUser = true;
 		mAdapter.setSelectedDay(position, selectedDay);
@@ -298,6 +300,11 @@ public class CalendarView extends LinearLayout {
 
 
 	public void setAccount(int schemeID, String schemeGroup) {
+		this.schemeGroup = schemeGroup;
+		this.schemeID = schemeID;
+	}
+
+	public void setAccount(int accountID) {
 		this.schemeGroup = schemeGroup;
 		this.schemeID = schemeID;
 	}
@@ -312,9 +319,9 @@ public class CalendarView extends LinearLayout {
 
 
 	/**
-	 * Show previous month page with selected day.
+	 * Show previous mMonth page with selected mDay.
 	 *
-	 * @param selectedDay selected day
+	 * @param selectedDay selected mDay
 	 */
 	protected void showPrevMonth(int selectedDay) {
 		int position = mPager.getCurrentItem() - 1;
@@ -322,9 +329,9 @@ public class CalendarView extends LinearLayout {
 	}
 
 	/**
-	 * Show next month page with selected day.
+	 * Show next mMonth page with selected mDay.
 	 *
-	 * @param selectedDay selected day
+	 * @param selectedDay selected mDay
 	 */
 	protected void showNextMonth(int selectedDay) {
 		int position = mPager.getCurrentItem() + 1;
@@ -332,42 +339,42 @@ public class CalendarView extends LinearLayout {
 	}
 
 	/**
-	 * Show previous month view.
+	 * Show previous mMonth view.
 	 */
 	public void showPrevMonth() {
 		showPrevMonth(1);
 	}
 
 	/**
-	 * Show next month view.
+	 * Show next mMonth view.
 	 */
 	public void showNextMonth() {
 		showNextMonth(1);
 	}
 
 	/**
-	 * Go to the month with specified year and month.
+	 * Go to the mMonth with specified mYear and mMonth.
 	 *
-	 * @param year the specified year
-	 * @param month the specified month
+	 * @param year the specified mYear
+	 * @param month the specified mMonth
 	 */
 	public void goToMonth(int year, int month) {
 		showMonth(mAdapter.getIndexOfMonth(year, month), 1);
 	}
 
 	/**
-	 * Go to the month with specified year, month and day.
+	 * Go to the mMonth with specified mYear, mMonth and mDay.
 	 *
-	 * @param year the specified year
-	 * @param month the specified month
-	 * @param day the specified day
+	 * @param year the specified mYear
+	 * @param month the specified mMonth
+	 * @param day the specified mDay
 	 */
 	public void goToMonthDay(int year, int month, int day) {
 		showMonth(mAdapter.getIndexOfMonth(year, month), day);
 	}
 
 	/**
-	 * Go back to the month of today.
+	 * Go back to the mMonth of today.
 	 */
 	public void backToToday() {
 		Calendar today = Calendar.getInstance();
@@ -378,8 +385,8 @@ public class CalendarView extends LinearLayout {
 	/**
 	 * Set the range of date.
 	 *
-	 * @param minYear min year
-	 * @param maxYear max year
+	 * @param minYear min mYear
+	 * @param maxYear max mYear
 	 */
 	public void setDateRange(int minYear, int maxYear) {
 		Month min = new Month(minYear, 0, 1);

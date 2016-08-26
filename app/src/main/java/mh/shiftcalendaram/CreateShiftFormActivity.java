@@ -26,7 +26,7 @@ import android.widget.TimePicker;
 import org.xdty.preference.colorpicker.ColorPickerDialog;
 import org.xdty.preference.colorpicker.ColorPickerSwatch;
 
-import mh.shiftcalendaram.Database.Database;
+import mh.calendarlibrary.Database.Database;
 
 public class CreateShiftFormActivity extends AppCompatActivity {
 

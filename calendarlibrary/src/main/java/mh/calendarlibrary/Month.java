@@ -8,7 +8,7 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * Representation of a month on a calendar.
+ * Representation of a mMonth on a calendar.
  *
  * @author Vincent Cheung (coolingfall@gmail.com)
  */
@@ -36,11 +36,11 @@ class Month implements Parcelable {
 	}
 
 	/**
-	 * The constructor for month.
+	 * The constructor for mMonth.
 	 *
-	 * @param year year
-	 * @param month month
-	 * @param day day of month
+	 * @param year mYear
+	 * @param month mMonth
+	 * @param day mDay of mMonth
 	 */
 	protected Month(int year, int month, int day) {
 		mYear = year;
@@ -99,7 +99,7 @@ class Month implements Parcelable {
 		return calendar;
 	}
 
-	/* add month day into list */
+	/* add mMonth mDay into list */
 	private void addMonthDay(int year, int month, int day) {
 		Calendar calendar = generateWorkingCalendar(year, month, day);
 
@@ -124,7 +124,7 @@ class Month implements Parcelable {
 		}
 	}
 
-	/* to check if current month is the month of today for given calendar */
+	/* to check if current mMonth is the mMonth of today for given calendar */
 	private boolean isMonthOfToday(Calendar calendar) {
 		Calendar today = Calendar.getInstance();
 		today.setTimeInMillis(System.currentTimeMillis());
@@ -134,7 +134,7 @@ class Month implements Parcelable {
 	}
 
 	/**
-	 * Get total weeks in current month.
+	 * Get total weeks in current mMonth.
 	 *
 	 * @return total weeks
 	 */
@@ -143,9 +143,9 @@ class Month implements Parcelable {
 	}
 
 	/**
-	 * Get {@link MonthDay} in current month according to index.
+	 * Get {@link MonthDay} in current mMonth according to index.
 	 *
-	 * @param index index in month view
+	 * @param index index in mMonth view
 	 * @return {@link MonthDay}
 	 */
 	protected MonthDay getMonthDay(int index) {
@@ -157,10 +157,10 @@ class Month implements Parcelable {
 	}
 
 	/**
-	 * Get {@link MonthDay} in current month according to x index and y index in month view.
+	 * Get {@link MonthDay} in current mMonth according to x index and y index in mMonth view.
 	 *
-	 * @param xIndex x index in month view
-	 * @param yIndex y index in month view
+	 * @param xIndex x index in mMonth view
+	 * @param yIndex y index in mMonth view
 	 * @return {@link MonthDay}
 	 */
 	protected MonthDay getMonthDay(int xIndex, int yIndex) {
@@ -168,25 +168,25 @@ class Month implements Parcelable {
 	}
 
 	/**
-	 * Get the year of current month.
+	 * Get the mYear of current mMonth.
 	 *
-	 * @return year
+	 * @return mYear
 	 */
 	protected int getYear() {
 		return mYear;
 	}
 
 	/**
-	 * Get current month.
+	 * Get current mMonth.
 	 *
-	 * @return current month
+	 * @return current mMonth
 	 */
 	protected int getMonth() {
 		return mMonth;
 	}
 
 	/**
-	 * To check if current month is the month of today.
+	 * To check if current mMonth is the mMonth of today.
 	 *
 	 * @return true if was, otherwise return false
 	 */
@@ -195,10 +195,10 @@ class Month implements Parcelable {
 	}
 
 	/**
-	 * Get the index of day in current month.
+	 * Get the index of mDay in current mMonth.
 	 *
-	 * @param day the day in current month
-	 * @return the index of day
+	 * @param day the mDay in current mMonth
+	 * @return the index of mDay
 	 */
 	protected int getIndexOfDayInCurMonth(int day) {
 		for (int i = 0; i < mMonthDayList.size(); i++) {
@@ -213,9 +213,9 @@ class Month implements Parcelable {
 	}
 
 	/**
-	 * Get the index of today if today was in current month.
+	 * Get the index of today if today was in current mMonth.
 	 *
-	 * @return the index of today if was in current month, otherwise return -1
+	 * @return the index of today if was in current mMonth, otherwise return -1
 	 */
 	protected int getIndexOfToday() {
 		if (!mIsMonthOfToday) {

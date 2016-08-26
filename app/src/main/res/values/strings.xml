@@ -37,4 +37,5 @@
         <item>Vlastní</item>
     </string-array>
     <string name="title_activity_scheme_list">SchemeListActivity</string>
+    <string name="title_activity_statistic">StatisticActivity</string>
 </resources>

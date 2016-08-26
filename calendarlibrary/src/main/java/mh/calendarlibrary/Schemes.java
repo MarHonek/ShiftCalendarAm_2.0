@@ -52,9 +52,9 @@ public class Schemes {
     /**
      * The constructor of Lunar calendar.
      *
-     * @param year the year
-     * @param month the month
-     * @param day the day
+     * @param year the mYear
+     * @param month the mMonth
+     * @param day the mDay
      */
     public Schemes(int year, int month, int day) {
         setDate(year, month, day);
@@ -112,7 +112,6 @@ public class Schemes {
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
         today.set(Calendar.MILLISECOND, 0);
-
 
         DateTime start = new DateTime(2014, 1, 1, 0, 0, 0, 0);
         DateTime end = new DateTime(today.get(Calendar.YEAR), today.get(Calendar.MONTH)+1, today.get(Calendar.DAY_OF_MONTH), 0, 0, 0, 0);

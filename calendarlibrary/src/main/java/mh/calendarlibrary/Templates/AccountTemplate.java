@@ -1,4 +1,4 @@
-package mh.shiftcalendaram.Templates;
+package mh.calendarlibrary.Templates;
 
 
 public class AccountTemplate extends ListTemplate{

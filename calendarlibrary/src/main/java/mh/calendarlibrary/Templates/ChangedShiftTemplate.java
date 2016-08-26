@@ -1,7 +1,5 @@
-package mh.shiftcalendaram.Templates;
+package mh.calendarlibrary.Templates;
 
-
-import android.graphics.Color;
 
 public class ChangedShiftTemplate{
 	

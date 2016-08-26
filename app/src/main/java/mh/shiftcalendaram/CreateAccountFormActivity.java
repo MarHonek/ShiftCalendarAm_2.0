@@ -23,7 +23,7 @@ import org.xdty.preference.colorpicker.ColorPickerSwatch;
 import java.util.ArrayList;
 
 import mh.calendarlibrary.Schemes;
-import mh.shiftcalendaram.Database.Database;
+import mh.calendarlibrary.Database.Database;
 
 public class CreateAccountFormActivity extends AppCompatActivity {
 

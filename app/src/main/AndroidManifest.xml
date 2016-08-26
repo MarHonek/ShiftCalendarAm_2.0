@@ -40,6 +40,10 @@
         <activity
             android:name=".SchemeListActivity"
             android:label="@string/title_activity_scheme_list"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".StatisticActivity"
+            android:label="@string/title_activity_statistic"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

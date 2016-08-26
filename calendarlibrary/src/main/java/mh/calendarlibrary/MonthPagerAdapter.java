@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import java.util.Calendar;
 
 /**
- * A pager adapter for month, used in {@link CalendarView}.
+ * A pager adapter for mMonth, used in {@link CalendarView}.
  *
  * @author Vincent Cheung (coolingfall@gmail.com)
  */
@@ -25,7 +25,7 @@ final class MonthPagerAdapter extends PagerAdapter {
 	private SparseArrayCompat<MonthView> mViewCache = new SparseArrayCompat<>();
 
 	/**
-	 * The constructor of month pager adapter.
+	 * The constructor of mMonth pager adapter.
 	 *
 	 * @param context   the context to use
 	 * @param calendarView {@link CalendarView}
@@ -75,7 +75,7 @@ final class MonthPagerAdapter extends PagerAdapter {
 		return view == object;
 	}
 
-	/* get month item from cache array */
+	/* get mMonth item from cache array */
 	private Month getItem(int position) {
 		Month monthItem = mMonthCache.get(position);
 		if (monthItem != null) {
@@ -98,9 +98,9 @@ final class MonthPagerAdapter extends PagerAdapter {
 		return monthItem;
 	}
 
-	/* calculate month range */
+	/* calculate mMonth range */
 	private void calculateRange(Month minDate, Month maxDate) {
-		/* calculate total month */
+		/* calculate total mMonth */
 		int minYear = minDate.getYear();
 		int minMonth = minDate.getMonth();
 		int maxYear = maxDate.getYear();
@@ -109,9 +109,9 @@ final class MonthPagerAdapter extends PagerAdapter {
 	}
 
 	/**
-	 * Get the index of month for today.
+	 * Get the index of mMonth for today.
 	 *
-	 * @return index of month
+	 * @return index of mMonth
 	 */
 	protected int getIndexOfCurrentMonth() {
 		Calendar calendar = Calendar.getInstance();
@@ -124,10 +124,10 @@ final class MonthPagerAdapter extends PagerAdapter {
 	}
 
 	/**
-	 * Get the index of given year and month.
+	 * Get the index of given mYear and mMonth.
 	 *
-	 * @param year  the specified year
-	 * @param month the specified month
+	 * @param year  the specified mYear
+	 * @param month the specified mMonth
 	 * @return the index
 	 */
 	protected int getIndexOfMonth(int year, int month) {
@@ -135,10 +135,10 @@ final class MonthPagerAdapter extends PagerAdapter {
 	}
 
 	/**
-	 * Set selected index for month view.
+	 * Set selected index for mMonth view.
 	 *
 	 * @param pagerPosition position of pager
-	 * @param selectedDay   selected day
+	 * @param selectedDay   selected mDay
 	 */
 	protected void setSelectedDay(int pagerPosition, int selectedDay) {
 		MonthView monthView = mViewCache.get(pagerPosition);
@@ -151,7 +151,7 @@ final class MonthPagerAdapter extends PagerAdapter {
 	}
 
 	/**
-	 * Reset selected day to the first day of month or today.
+	 * Reset selected mDay to the first mDay of mMonth or today.
 	 *
 	 * @param pagerPosition position of pager
 	 */
@@ -163,8 +163,8 @@ final class MonthPagerAdapter extends PagerAdapter {
 	/**
 	 * Set date range of lunar view.
 	 *
-	 * @param minDate min date month
-	 * @param maxDate max date month
+	 * @param minDate min date mMonth
+	 * @param maxDate max date mMonth
 	 */
 	protected void setDateRange(Month minDate, Month maxDate) {
 		mMinMonth = minDate;

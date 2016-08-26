@@ -1,7 +1,6 @@
 package mh.shiftcalendaram.Adapters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +12,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import mh.shiftcalendaram.R;
-import mh.shiftcalendaram.Templates.ListTemplate;
-import mh.shiftcalendaram.Templates.ShiftTemplate;
+import mh.calendarlibrary.Templates.ShiftTemplate;
 
 /**
  * Created by Martin on 01.08.2016.

@@ -83,10 +83,12 @@ public class SchemeListActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPref.edit();
 
         editor.putInt("account", -1);
-        editor.putInt("scheme", schemeIndex);
-        editor.putString("schemeGroup", btn.getText().toString());
         editor.commit();
 
+        Intent i = getIntent();
+        i.putExtra("scheme", schemeIndex);
+        i.putExtra("schemeGroup", btn.getText().toString());
+        setResult(2, i);
         finish();
     }
 

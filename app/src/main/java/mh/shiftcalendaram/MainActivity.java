@@ -4,13 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +18,7 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
@@ -30,13 +28,12 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Locale;
 
 import mh.calendarlibrary.CalendarView;
 import mh.calendarlibrary.MonthDay;
 import mh.calendarlibrary.Schemes;
-import mh.shiftcalendaram.Database.Database;
-import mh.shiftcalendaram.Templates.AccountTemplate;
+import mh.calendarlibrary.Database.Database;
+import mh.calendarlibrary.Templates.AccountTemplate;
 
 public class MainActivity extends AppCompatActivity implements CalendarView.OnDatePickListener {
 
@@ -84,15 +81,16 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
                     public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
                         if (profile.getIdentifier() == 1000) {
                             startActivity(new Intent(MainActivity.this, CreateAccountFormActivity.class));
+                        }
+                        else if (profile.getIdentifier() == 1001) {
                         } else {
                             editor.putInt("account", (int) profile.getIdentifier());
                             editor.commit();
 
                             calendarView.reset();
 
-                           /* ArrayList<AccountTemplate> accounts = data.getAccounts();
+                            ArrayList<AccountTemplate> accounts = data.getAccounts();
                             calendarView.setAccount(accounts.get((int) profile.getIdentifier()).getShiftSchemeID(), accounts.get((int) profile.getIdentifier()).getShiftSchemeGroup());
-                            */
                             result.resetDrawerContent();
                             result.closeDrawer();
                         }
@@ -107,9 +105,10 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName("schémata"),
-                        new PrimaryDrawerItem().withName("stále schéma"),
-                        new SecondaryDrawerItem().withName("dwq")
+                        new PrimaryDrawerItem().withName("blah"),
+                        new PrimaryDrawerItem().withName("pico jo"),
+                        new DividerDrawerItem(),
+                        new SecondaryDrawerItem().withName("Statistika")
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -117,8 +116,11 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
 
                         switch (position) {
                             case 1:
-                                startActivity(new Intent(MainActivity.this, SchemeListActivity.class));
+                                startActivityForResult(new Intent(MainActivity.this, SchemeListActivity.class), 2);
+                                result.closeDrawer();
                                 break;
+                            case 2:
+                                startActivity(new Intent(MainActivity.this, ShiftListActivity.class));
                         }
 
 
@@ -132,13 +134,14 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
 
         int accountIndex = sharedPref.getInt("account", -1);
 
-        ArrayList<AccountTemplate> accounts = data.getAccounts();
+        calendarView.setAccount(0);
+      /*  ArrayList<AccountTemplate> accounts = data.getAccounts();
         if(accountIndex == -1) {
             calendarView.setAccount(-1, "A");
         }
         else {
             calendarView.setAccount(accounts.get(accountIndex).getShiftSchemeID(), accounts.get(accountIndex).getShiftSchemeGroup());
-        }
+        }*/
 
         calendarView.setOnDatePickListener(this);
 
@@ -173,7 +176,6 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
         int year = monthDay.getCalendar().get(Calendar.YEAR);
         int month = monthDay.getCalendar().get(Calendar.MONTH);
         toolbar.setTitle(monthDay.getMonthStr(month) + " " + String.valueOf(year));
-
     }
 
     @Override
@@ -205,7 +207,11 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Log.v("dwd", "okerrrrrrrrrrrrrrr");
+        if(requestCode == 2) {
+            calendarView.reset();
+            calendarView.setAccount(data.getIntExtra("scheme",0), data.getStringExtra("schemeGroup"));
+        }
+
 
     }
 

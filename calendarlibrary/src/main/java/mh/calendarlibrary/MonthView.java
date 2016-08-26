@@ -3,19 +3,25 @@ package mh.calendarlibrary;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.Typeface;
 import android.text.style.TypefaceSpan;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Calendar;
 
+import mh.calendarlibrary.Database.Database;
+import mh.calendarlibrary.Templates.AccountTemplate;
+
 /**
- * Display one month with solar and lunar date on a calendar.
+ * Display one mMonth with solar and lunar date on a calendar.
  *
  * @author Vincent Cheung (coolingfall@gmail.com)
  */
@@ -30,6 +36,7 @@ public final class MonthView extends View {
 	private float mLunarOffset;
 	private float mCircleRadius;
 
+	Database database;
 	private Month mMonth;
 	private CalendarView mCalendarView;
 
@@ -37,7 +44,7 @@ public final class MonthView extends View {
 	private Paint mPaint;
 
 	/**
-	 * The constructor of month view.
+	 * The constructor of mMonth view.
 	 *
 	 * @param context context to use
 	 * @param calendarView {@link CalendarView}
@@ -45,8 +52,15 @@ public final class MonthView extends View {
 	public MonthView(Context context, Month month, CalendarView calendarView) {
 		super(context);
 
+		database = new Database(context);
 		mMonth = month;
-		mMonth.setScheme(calendarView.getSchemeID(), calendarView.getSchemeGroup());
+
+		if(calendarView.accountID == -1) {
+			mMonth.setScheme(calendarView.getSchemeID(), calendarView.getSchemeGroup());
+		} else {
+			ArrayList<AccountTemplate> accounts = database.getAccounts();
+			mMonth.setScheme(accounts.get(calendarView.accountID).getShiftSchemeID(), accounts.get(calendarView.accountID).getShiftSchemeGroup());
+		}
 		mCalendarView = calendarView;
 		init();
 	}
@@ -110,7 +124,7 @@ public final class MonthView extends View {
 		}
 	}
 
-	/* init month view */
+	/* init mMonth view */
 	private void init() {
 		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG | Paint.LINEAR_TEXT_FLAG);
 		mPaint.setTextAlign(Paint.Align.CENTER);
@@ -122,7 +136,7 @@ public final class MonthView extends View {
 		setBackgroundColor(mCalendarView.getMonthBackgroundColor());
 	}
 
-	/* init month region with the width and height of day */
+	/* init mMonth region with the width and height of mDay */
 	private void initMonthRegion(Region[][] monthRegion, int dayWidth, int dayHeight) {
 		for (int i = 0; i < monthRegion.length; i++) {
 			for (int j = 0; j < monthRegion[i].length; j++) {
@@ -134,13 +148,13 @@ public final class MonthView extends View {
 		}
 	}
 
-	/* get month region for current month */
+	/* get mMonth region for current mMonth */
 	private Region[][] getMonthRegion() {
 		Region[][] monthRegion = mMonthWithSixWeeks;
 		return monthRegion;
 	}
 
-	/* draw all the text in month view */
+	/* draw all the text in mMonth view */
 	private void draw(Canvas canvas, Rect rect, int xIndex, int yIndex) {
 		MonthDay monthDay = mMonth.getMonthDay(xIndex, yIndex);
 
@@ -148,6 +162,7 @@ public final class MonthView extends View {
 		drawBackground(canvas,rect, monthDay);
 		drawCalendarText(canvas, rect, monthDay);
 		drawShiftText(canvas,rect, monthDay);
+		drawHoliday(canvas, rect, monthDay);
 	}
 
 	private void drawBackground(Canvas canvas, Rect rect, MonthDay monthDay) {
@@ -177,7 +192,7 @@ public final class MonthView extends View {
 
 	}
 
-	/* draw calendar text in month view */
+	/* draw calendar text in mMonth view */
 	private void drawCalendarText(Canvas canvas, Rect rect, MonthDay monthDay) {
 		if (monthDay == null) {
 			return;
@@ -193,7 +208,7 @@ public final class MonthView extends View {
 		canvas.drawText(monthDay.getSolarDay(), rect.right - rect.width() / 4, rect.top + rect.height() / 4, mPaint);
 	}
 
-	/* draw lunar text in month view */
+	/* draw lunar text in mMonth view */
 	private void drawShiftText(Canvas canvas, Rect rect, MonthDay monthDay) {
 		if (monthDay == null) {
 			return;
@@ -209,9 +224,20 @@ public final class MonthView extends View {
 		canvas.drawText(monthDay.getShift(), rect.centerX(), rect.centerY() + mShiftTextSize/2, mPaint);
 	}
 
-	/* draw circle for selected day */
-	/*private void drawBackground(Canvas canvas, Rect rect, MonthDay day, int xIndex, int yIndex) {
-		if (day.isToday()) {
+	private void drawHoliday(Canvas canvas, Rect rect, MonthDay monthDay) {
+		if(monthDay.isTodayHoliday() == true) {
+			if(!monthDay.isCheckable()) {
+				mPaint.setColor(Color.RED);
+			} else {
+				mPaint.setColor(Color.BLUE);
+			}
+			canvas.drawRect(rect.left + 20, rect.top + 20, rect.left + 40, rect.top+40, mPaint);
+		}
+	}
+
+	/* draw circle for selected mDay */
+	/*private void drawBackground(Canvas canvas, Rect rect, MonthDay mDay, int xIndex, int yIndex) {
+		if (mDay.isToday()) {
 			Drawable background = mLunarView.getTodayBackground();
 			if (background == null) {
 				drawRing(canvas, rect);
@@ -224,7 +250,7 @@ public final class MonthView extends View {
 		}
 
 		/* not today was selected */
-		/*if (mSelectedIndex == -1 && day.isFirstDay()) {
+		/*if (mSelectedIndex == -1 && mDay.isFirstDay()) {
 			mSelectedIndex = xIndex * DAYS_IN_WEEK + yIndex;
 		}
 
@@ -279,7 +305,7 @@ public final class MonthView extends View {
 	}
 
 	/**
-	 * Perform day click event.
+	 * Perform mDay click event.
 	 */
 	protected void performDayClick() {
 		MonthDay monthDay = mMonth.getMonthDay(mSelectedIndex);
@@ -287,9 +313,9 @@ public final class MonthView extends View {
 	}
 
 	/**
-	 * Set selected day, the selected day will draw background.
+	 * Set selected mDay, the selected mDay will draw background.
 	 *
-	 * @param day selected day
+	 * @param day selected mDay
 	 */
 	protected void setSelectedDay(int day) {
 		if (mMonth.isMonthOfToday() && day == 0) {
