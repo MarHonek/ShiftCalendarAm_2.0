@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
                                 result.closeDrawer();
                                 break;
                             case 3:
-                                startActivity(new Intent(MainActivity.this, ShiftListActivity.class));
+                                startActivity(new Intent(MainActivity.this, StatisticActivity.class));
                         }
 
 
@@ -317,7 +317,7 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
 
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
-        if(holiday.isTodayHoliday())
+        if(note == null)
         {
             builder.setMessage("Svátek:\n" + holiday.getNameByDay())
                     .setTitle("Poznámky a svátky")
@@ -327,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
                         }
                     });
         }
-        else if(note != null)
+        else if(!holiday.isTodayHoliday())
         {
             builder.setMessage("Poznámka:\n"+ note)
                     .setTitle("Poznámky a svátky")
@@ -350,7 +350,7 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
                     });
         }
         // 3. Get the AlertDialog from create()
-        if(holiday.isTodayHoliday())
+        if(holiday.isTodayHoliday() || note != null)
         {
             AlertDialog dialog = builder.create();
             dialog.show();
