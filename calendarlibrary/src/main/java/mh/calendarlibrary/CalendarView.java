@@ -32,6 +32,8 @@ public class CalendarView extends LinearLayout {
 	private MonthPagerAdapter mAdapter;
 	private WeekLabelView mWeekLabelView;
 	private OnDatePickListener mOnDatePickListener;
+	private OnChangeShiftListener mOnChangeShiftListener;
+	private onCalendarDayClickListener mOnCalendarDayClickListener;
 	private boolean mIsChangedByUser;
 
 	int accountID = -1;
@@ -124,12 +126,13 @@ public class CalendarView extends LinearLayout {
 		}
 	};
 
-	public void reset() {
-		backToToday();
+	public void reset(int year, int month) {
+		//backToToday();
 		mAdapter = new MonthPagerAdapter(getContext(), this);
 		mPager.setAdapter(mAdapter);
-		mPager.addOnPageChangeListener(mPageListener);
-		mPager.setCurrentItem(mAdapter.getIndexOfCurrentMonth());
+		//showMonth(mAdapter.getIndexOfMonth(year,month), 0);
+		mPager.setCurrentItem(mAdapter.getIndexOfMonth(year,month));
+
 	}
 
 	/* get color with given color resource id */
@@ -142,6 +145,8 @@ public class CalendarView extends LinearLayout {
 		return ContextCompat.getDrawable(getContext(), resId);
 	}
 
+
+
 	/**
 	 * Interface definition for a callback to be invoked when date picked.
 	 */
@@ -153,6 +158,26 @@ public class CalendarView extends LinearLayout {
 		 * @param monthDay {@link MonthDay}
 		 */
 		void onDatePick(CalendarView view, MonthDay monthDay);
+	}
+
+	public interface OnChangeShiftListener {
+		/**
+		 * Invoked when date picked.
+		 *
+		 * @param view {@link CalendarView}
+		 * @param monthDay {@link MonthDay}
+		 */
+		void onChangeShift(CalendarView view, MonthDay monthDay);
+	}
+
+	public interface onCalendarDayClickListener {
+		/**
+		 * Invoked when date picked.
+		 *
+		 * @param view {@link CalendarView}
+		 * @param monthDay {@link MonthDay}
+		 */
+		void onCalendarDayClick(CalendarView view, MonthDay monthDay);
 	}
 
 	/**
@@ -279,6 +304,12 @@ public class CalendarView extends LinearLayout {
 	public void setOnDatePickListener(OnDatePickListener l) {
 		mOnDatePickListener = l;
 	}
+	public void setOnChangeShiftListener(OnChangeShiftListener l) {
+		mOnChangeShiftListener = l;
+	}
+	public void setOnCalendarDayClickListener(onCalendarDayClickListener l ) {
+		mOnCalendarDayClickListener = l;
+	}
 
 	/**
 	 * Dispatch date pick listener. This will be invoked be {@link MonthView}
@@ -288,6 +319,18 @@ public class CalendarView extends LinearLayout {
 	protected void dispatchDateClickListener(MonthDay monthDay) {
 		if (mOnDatePickListener != null) {
 			mOnDatePickListener.onDatePick(this, monthDay);
+		}
+	}
+
+	protected void changeShiftClickListener(MonthDay monthDay) {
+		if (mOnChangeShiftListener != null) {
+			mOnChangeShiftListener.onChangeShift(this, monthDay);
+		}
+	}
+
+	protected void calendarDayClick(MonthDay monthDay) {
+		if (mOnCalendarDayClickListener != null) {
+			mOnCalendarDayClickListener.onCalendarDayClick(this, monthDay);
 		}
 	}
 
@@ -302,11 +345,11 @@ public class CalendarView extends LinearLayout {
 	public void setAccount(int schemeID, String schemeGroup) {
 		this.schemeGroup = schemeGroup;
 		this.schemeID = schemeID;
+		this.accountID = -1;
 	}
 
 	public void setAccount(int accountID) {
-		this.schemeGroup = schemeGroup;
-		this.schemeID = schemeID;
+		this.accountID = accountID;
 	}
 
 	public int getSchemeID() {

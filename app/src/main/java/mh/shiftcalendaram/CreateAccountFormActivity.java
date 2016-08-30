@@ -24,6 +24,7 @@ import java.util.ArrayList;
 
 import mh.calendarlibrary.Schemes;
 import mh.calendarlibrary.Database.Database;
+import mh.calendarlibrary.Templates.AccountTemplate;
 
 public class CreateAccountFormActivity extends AppCompatActivity {
 
@@ -38,10 +39,12 @@ public class CreateAccountFormActivity extends AppCompatActivity {
     int selectedColor;
     String strColor;
 
+    boolean edit = false;
     Database database;
 
-    //data section
+    //database section
     int positionOfScheme = - 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +55,8 @@ public class CreateAccountFormActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+
 
         database = new Database(CreateAccountFormActivity.this);
 
@@ -67,6 +72,14 @@ public class CreateAccountFormActivity extends AppCompatActivity {
         allDaySwitch = (MultiStateToggleButton) this.findViewById(R.id.toggleButton_createAccount_scheme);
         allDaySwitch.setValue(0);
         allDaySwitch.setEnabled(false);
+
+        int listPosition = getIntent().getIntExtra("position", -1);
+        if(listPosition != -1) {
+            edit = true;
+            getDataToEdit(listPosition);
+        }
+
+
 
         //TODO: upravit barvy v pickeru, a vychozí barvu
         selectedColor = ContextCompat.getColor(getBaseContext(), R.color.colorPrimary);
@@ -115,6 +128,7 @@ public class CreateAccountFormActivity extends AppCompatActivity {
         if(id == R.id.ic_accept) {
             if(CheckAndSetErrors() == true) {
                 database.insertAccount(name.getText().toString(), Schemes.getStringValueOfTypeSwitch(allDaySwitch.getValue()), positionOfScheme, strColor, desc.getText().toString());
+                setResult(1000, null);
                 finish();
             }
         }
@@ -131,16 +145,20 @@ public class CreateAccountFormActivity extends AppCompatActivity {
                 head.setBackgroundColor(selectedColor);
                 strColor = String.format("#%06X", 0xFFFFFF & selectedColor);
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Window window = getWindow();
-                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                    window.setStatusBarColor(Colors.convertColorToDark(selectedColor));
-                }
+               colorHeader(selectedColor);
             }
         });
 
         dialog.show(getFragmentManager(), "color_dialog_test");
 
+    }
+
+    public void colorHeader(int chooseColor) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Colors.convertColorToDark(chooseColor));
+        }
     }
     public boolean CheckAndSetErrors() {
 
@@ -179,7 +197,42 @@ public class CreateAccountFormActivity extends AppCompatActivity {
             allDaySwitch.setEnabled(true);
             allDaySwitch.setAlpha(1f);
         }
+    }
+
+    //TODO: upravit
+    public void getDataToEdit(int listPosition) {
+        ArrayList<AccountTemplate> accounts = database.getAccounts();
+        name.setText(accounts.get(listPosition).getName());
+        String type = accounts.get(listPosition).getShiftSchemeGroup();
+        allDaySwitch.setEnabled(true);
+        allDaySwitch.setAlpha(1f);
+        switch (type) {
+            case "A": allDaySwitch.setValue(0); break;
+            case "B": allDaySwitch.setValue(1); break;
+            case "C": allDaySwitch.setValue(2); break;
+            case "D": allDaySwitch.setValue(3); break;
+        }
+        ArrayList<String> schemes = Schemes.getStringArray();
+        positionOfScheme = accounts.get(listPosition).getShiftSchemeID();
+        scheme.setText(schemes.get(positionOfScheme));
+        //TODO: dodelat desc (note)
+        //TODO: nahradit pozice v listu ID z databáze
+        selectedColor = accounts.get(listPosition).getColor();
+        head.setBackgroundColor(selectedColor);
+        colorHeader(selectedColor);
+        strColor = accounts.get(listPosition).getColorHex();
 
 
+
+
+
+    }
+
+    //TODO:aplikovat setshadows všude
+    public void setShadows() {
+        View shadow = (View)findViewById(R.id.shadow);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            shadow.setVisibility(View.GONE);
+        }
     }
 }

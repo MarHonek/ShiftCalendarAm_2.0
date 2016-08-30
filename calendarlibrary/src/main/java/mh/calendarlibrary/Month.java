@@ -2,10 +2,15 @@ package mh.calendarlibrary;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.provider.ContactsContract;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import mh.calendarlibrary.Templates.ChangedShiftTemplate;
+import mh.calendarlibrary.Templates.NoteTemplate;
+import mh.calendarlibrary.Templates.ShiftTemplate;
 
 /**
  * Representation of a mMonth on a calendar.
@@ -27,6 +32,10 @@ class Month implements Parcelable {
 
 	int schemeID = -1;
 	String schemeGroup;
+	int accountID = -1;
+	ArrayList<NoteTemplate> notes;
+	ArrayList<ChangedShiftTemplate> changedShifts;
+	ArrayList<ShiftTemplate> shifts;
 
 	/**
 	 * Parcelable Stuff.
@@ -52,6 +61,45 @@ class Month implements Parcelable {
 		this.schemeID = schemeID;
 		this.schemeGroup = schemeGroup;
 		addMonthDay(mYear, mMonth, mDay);
+	}
+
+
+	protected void setScheme(int accountID, int schemeID, String schemeGroup,ArrayList<NoteTemplate> notes, ArrayList<ChangedShiftTemplate> changeShifts, ArrayList<ShiftTemplate> shifts) {
+		this.accountID = accountID;
+		this.schemeID = schemeID;
+		this.schemeGroup = schemeGroup;
+		this.notes = notes;
+		this.changedShifts = changeShifts;
+		this.shifts = shifts;
+		addMonthDay(mYear, mMonth, mDay);
+	}
+
+
+	private boolean isTodayNote(ArrayList<NoteTemplate> notes, Calendar calendar) {
+		if(notes != null) {
+			for (int i = 0; i < notes.size(); i++) {
+				if (notes.get(i).getYear() == calendar.get(Calendar.YEAR) && notes.get(i).getMonth() == calendar.get(Calendar.MONTH) && notes.get(i).getDay() == calendar.get(Calendar.DAY_OF_MONTH)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private int getChangedShiftListIndex(ArrayList<ChangedShiftTemplate> changedShifts, Calendar calendar) {
+		if(changedShifts != null) {
+			for (int i = 0; i < changedShifts.size(); i++) {
+				if (changedShifts.get(i).getYear() == calendar.get(Calendar.YEAR) && changedShifts.get(i).getMonth() == calendar.get(Calendar.MONTH) && changedShifts.get(i).getDay() == calendar.get(Calendar.DAY_OF_MONTH)) {
+					for(int j = 0; j < shifts.size();j++) {
+						if(changedShifts.get(i).getShiftID() == shifts.get(j).getID()) {
+							return j;
+						}
+					}
+
+				}
+			}
+		}
+		return -1;
 	}
 
 	@Override
@@ -109,6 +157,12 @@ class Month implements Parcelable {
 			for (int j = 0; j < DAYS_IN_WEEK; j++) {
 				MonthDay monthDay = new MonthDay(calendar);
 				monthDay.setShift(schemes.getShift());
+				monthDay.setDayNote(isTodayNote(notes, calendar));
+
+				int shiftIndex = getChangedShiftListIndex(changedShifts,calendar);
+				if(shiftIndex != -1) {
+					monthDay.setChangedShift(shifts.get(shiftIndex).getShortName(), shifts.get(shiftIndex).getColor());
+				}
 				int currentDays = i * DAYS_IN_WEEK + j;
 				monthDay.setCheckable(!(currentDays < mDelta ||
 					currentDays >= mTotalDays + mDelta));

@@ -8,8 +8,11 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.Typeface;
+import android.opengl.GLException;
+import android.os.Handler;
 import android.text.style.TypefaceSpan;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -19,6 +22,9 @@ import java.util.Calendar;
 
 import mh.calendarlibrary.Database.Database;
 import mh.calendarlibrary.Templates.AccountTemplate;
+import mh.calendarlibrary.Templates.ChangedShiftTemplate;
+import mh.calendarlibrary.Templates.NoteTemplate;
+import mh.calendarlibrary.Templates.ShiftTemplate;
 
 /**
  * Display one mMonth with solar and lunar date on a calendar.
@@ -43,6 +49,10 @@ public final class MonthView extends View {
 	private final Region[][] mMonthWithSixWeeks = new Region[6][DAYS_IN_WEEK];
 	private Paint mPaint;
 
+	public enum Gesture {
+		CLICK, LONG_PRESS
+	}
+
 	/**
 	 * The constructor of mMonth view.
 	 *
@@ -58,8 +68,13 @@ public final class MonthView extends View {
 		if(calendarView.accountID == -1) {
 			mMonth.setScheme(calendarView.getSchemeID(), calendarView.getSchemeGroup());
 		} else {
-			ArrayList<AccountTemplate> accounts = database.getAccounts();
-			mMonth.setScheme(accounts.get(calendarView.accountID).getShiftSchemeID(), accounts.get(calendarView.accountID).getShiftSchemeGroup());
+			AccountTemplate account = database.getAccountByID(calendarView.accountID);
+			ArrayList<NoteTemplate> notes = database.getNotesByAccount(calendarView.accountID);
+			ArrayList<ChangedShiftTemplate> changedShifts = database.getChangedShiftsByAccount(calendarView.accountID);
+			ArrayList<ShiftTemplate> shifts = database.getShifts();
+			mMonth.setScheme(calendarView.accountID, account.getShiftSchemeID(), account.getShiftSchemeGroup(), notes, changedShifts, shifts);
+
+
 		}
 		mCalendarView = calendarView;
 		init();
@@ -109,19 +124,57 @@ public final class MonthView extends View {
 		canvas.restore();
 	}
 
+	final GestureDetector gestureDetector = new GestureDetector(this.getContext(), new GestureDetector.SimpleOnGestureListener() {
+
+		@Override
+		public boolean onDown(MotionEvent e) {
+			return true;
+		}
+
+		@Override
+		public boolean onSingleTapUp(MotionEvent e) {
+			handleClickEvent((int) e.getX(), (int) e.getY(), Gesture.CLICK);
+			return true;
+		}
+
+		@Override
+		public void onLongPress(MotionEvent e) {
+			handleClickEvent((int) e.getX(), (int) e.getY(), Gesture.LONG_PRESS);
+			super.onLongPress(e);
+		}
+	});
+
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+
+		if (gestureDetector.onTouchEvent(event)) {
+			return true;
+		}
+		return super.onTouchEvent(event);
+
+		/*if(event.getAction() == MotionEvent.ACTION_DOWN)
+
+		if((event.getAction() == MotionEvent.ACTION_MOVE)||(event.getAction() == MotionEvent.ACTION_UP))
+			handler.removeCallbacks(mLongPressed);
+		return super.onTouchEvent(event, mapView);
+		//return gestureDetector.onTouchEvent(event);*/
+
+/*
+
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			return true;
 
 		case MotionEvent.ACTION_UP:
 			handleClickEvent((int) event.getX(), (int) event.getY());
+			Log.v("dqw", "gds");
 			return true;
-
 		default:
 			return super.onTouchEvent(event);
 		}
+		*/
+
+
 	}
 
 	/* init mMonth view */
@@ -163,27 +216,38 @@ public final class MonthView extends View {
 		drawCalendarText(canvas, rect, monthDay);
 		drawShiftText(canvas,rect, monthDay);
 		drawHoliday(canvas, rect, monthDay);
+		drawNote(canvas,rect,monthDay);
 	}
 
 	private void drawBackground(Canvas canvas, Rect rect, MonthDay monthDay) {
-
-
 
         //draw a calendar grid
 		mPaint.setColor(mCalendarView.getGridColor());
 		canvas.drawRect(rect, mPaint);
 
+		int changedShiftColor = monthDay.getChangedShiftColor();
+
 		if(monthDay.isToday() && monthDay.isCheckable()) {
 			mPaint.setColor(mCalendarView.getTodayIndicatorColor());
 			canvas.drawRect(rect.left + 1, rect.top + 1, rect.right - 1, rect.bottom - 1, mPaint);
+			if(changedShiftColor == 0)
 			mPaint.setColor(mCalendarView.getMonthCheckableBackgroundColor());
+			else
+				mPaint.setColor(changedShiftColor);
 			canvas.drawRect(rect.left + 10, rect.top + 10, rect.right - 10, rect.bottom - 10, mPaint);
 		} else {
-
-			if (!monthDay.isCheckable()) {
-				mPaint.setColor(mCalendarView.getMonthUncheckableBackgroundColor());
+			if(changedShiftColor == 0) {
+				if (!monthDay.isCheckable()) {
+					mPaint.setColor(mCalendarView.getMonthUncheckableBackgroundColor());
+				} else {
+					mPaint.setColor(mCalendarView.getMonthCheckableBackgroundColor());
+				}
 			} else {
-				mPaint.setColor(mCalendarView.getMonthCheckableBackgroundColor());
+				if (!monthDay.isCheckable()) {
+					mPaint.setColor(changedShiftColor);
+				} else {
+					mPaint.setColor(changedShiftColor);
+				}
 			}
 
 			canvas.drawRect(rect.left + 1, rect.top + 1, rect.right - 1, rect.bottom - 1, mPaint);
@@ -197,12 +261,15 @@ public final class MonthView extends View {
 		if (monthDay == null) {
 			return;
 		}
+		String name = monthDay.getChangedShiftName();
 
-		if (!monthDay.isCheckable()) {
-			mPaint.setColor(mCalendarView.getUnCheckableColor());
-		} else {
-			mPaint.setColor(mCalendarView.getSolarTextColor());
-		}
+		if(name == null) {
+			if (!monthDay.isCheckable()) {
+				mPaint.setColor(mCalendarView.getUnCheckableColor());
+			} else {
+				mPaint.setColor(mCalendarView.getSolarTextColor());
+			}
+		} else mPaint.setColor(Color.WHITE);
 
 		mPaint.setTextSize(mCalendarTextSize);
 		canvas.drawText(monthDay.getSolarDay(), rect.right - rect.width() / 4, rect.top + rect.height() / 4, mPaint);
@@ -214,14 +281,23 @@ public final class MonthView extends View {
 			return;
 		}
 
-		if (!monthDay.isCheckable()) {
-			mPaint.setColor(mCalendarView.getUnCheckableColor());
+		mPaint.setTextSize(mShiftTextSize);
+
+		String name = monthDay.getChangedShiftName();
+
+		if(name == null) {
+			if (!monthDay.isCheckable()) {
+				mPaint.setColor(mCalendarView.getUnCheckableColor());
+			} else {
+				mPaint.setColor(mCalendarView.getShiftTextColor());
+			}
+			canvas.drawText(monthDay.getShift(), rect.centerX(), rect.centerY() + mShiftTextSize/2, mPaint);
 		} else {
-			mPaint.setColor(mCalendarView.getShiftTextColor());
+			mPaint.setColor(Color.WHITE);
+			canvas.drawText(name, rect.centerX(), rect.centerY() + mShiftTextSize/2, mPaint);
 		}
 
-		mPaint.setTextSize(mShiftTextSize);
-		canvas.drawText(monthDay.getShift(), rect.centerX(), rect.centerY() + mShiftTextSize/2, mPaint);
+
 	}
 
 	private void drawHoliday(Canvas canvas, Rect rect, MonthDay monthDay) {
@@ -235,6 +311,16 @@ public final class MonthView extends View {
 		}
 	}
 
+	private void drawNote(Canvas canvas, Rect rect, MonthDay monthDay) {
+		if(monthDay.isTodayNote() == true) {
+			if(!monthDay.isCheckable()) {
+				mPaint.setColor(Color.RED);
+			} else {
+				mPaint.setColor(Color.BLUE);
+			}
+			canvas.drawRect(rect.left + 20, rect.bottom-40, rect.left + 40, rect.bottom-20, mPaint);
+		}
+	}
 	/* draw circle for selected mDay */
 	/*private void drawBackground(Canvas canvas, Rect rect, MonthDay mDay, int xIndex, int yIndex) {
 		if (mDay.isToday()) {
@@ -272,7 +358,7 @@ public final class MonthView extends View {
 	}*/
 
 	/* handle date click event */
-	private void handleClickEvent(int x, int y) {
+	private void handleClickEvent(int x, int y, Gesture gesture) {
 		Region[][] monthRegion = getMonthRegion();
 		for (int i = 0; i < monthRegion.length; i++) {
 			for (int j = 0; j < DAYS_IN_WEEK; j++) {
@@ -289,8 +375,13 @@ public final class MonthView extends View {
 				int day = monthDay.getCalendar().get(Calendar.DAY_OF_MONTH);
 
 				if (monthDay.isCheckable()) {
+
 					mSelectedIndex = i * DAYS_IN_WEEK + j;
-					performDayClick();
+					if(gesture == Gesture.LONG_PRESS) {
+						changeShiftClick();
+					} else if (gesture == Gesture.CLICK) {
+						calendarDayClick();
+					}
 					invalidate();
 				} else {
 					if (monthDay.getDayFlag() == MonthDay.PREV_MONTH_DAY) {
@@ -310,6 +401,16 @@ public final class MonthView extends View {
 	protected void performDayClick() {
 		MonthDay monthDay = mMonth.getMonthDay(mSelectedIndex);
 		mCalendarView.dispatchDateClickListener(monthDay);
+	}
+
+	protected void changeShiftClick() {
+		MonthDay monthDay = mMonth.getMonthDay(mSelectedIndex);
+		mCalendarView.changeShiftClickListener(monthDay);
+	}
+
+	protected void calendarDayClick() {
+		MonthDay monthDay = mMonth.getMonthDay(mSelectedIndex);
+		mCalendarView.calendarDayClick(monthDay);
 	}
 
 	/**

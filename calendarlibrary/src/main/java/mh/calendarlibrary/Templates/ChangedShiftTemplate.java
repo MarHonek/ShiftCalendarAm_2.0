@@ -1,45 +1,18 @@
 package mh.calendarlibrary.Templates;
 
 
-public class ChangedShiftTemplate{
+public class ChangedShiftTemplate extends CustomShiftTemplate{
 	
 	int shiftID;
-	int day;
-	int month;
-	int year;
-	int accID;
 	
 	public ChangedShiftTemplate(int shiftID, int day, int month, int year, int accID)
 	{
+		super(day, month, year, accID);
 		this.shiftID = shiftID;
-		this.day = day;
-		this.month = month;
-		this.year = year;
-		this.accID = accID;
 	}
 	
 	public int getShiftID()
 	{
 		return shiftID;
-	}
-	
-	public int getDay()
-	{
-		return day;
-	}
-	
-	public int getMonth()
-	{
-		return month;
-	}
-	
-	public int getYear()
-	{
-		return year;
-	}
-	
-	public int getAccID()
-	{
-		return accID;
 	}
 }

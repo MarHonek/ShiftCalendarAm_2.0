@@ -23,6 +23,12 @@ public class Holidays {
         mYear = calendar.get(Calendar.YEAR);
     }
 
+    public Holidays(int mDay, int mMonth)
+    {
+        this.mDay = mDay;
+        this.mMonth = mMonth;
+    }
+
     public Holidays(int mDay, int mMonth, String name)
     {
         this.mDay = mDay;

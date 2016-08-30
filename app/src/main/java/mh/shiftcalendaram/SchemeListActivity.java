@@ -22,6 +22,7 @@ import mh.shiftcalendaram.Adapters.ExpandableList;
 public class SchemeListActivity extends AppCompatActivity {
 
   //TODO: dodelat drawable k tlacitkum
+    //TODO: dodelat sipku zpet
     ArrayList<Schemes> schemes;
 
     boolean showSchemeGroup;
@@ -97,7 +98,7 @@ public class SchemeListActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
 
         getMenuInflater().inflate(R.menu.scheme_list, menu);
-        return true;
+        return false;
     }
 
 

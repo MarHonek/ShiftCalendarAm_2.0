@@ -10,6 +10,12 @@
     tools:showIn="@layout/activity_scheme_list"
     android:orientation="vertical">
 
+    <View
+        android:id="@+id/shadow"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@drawable/shadow"/>
+
     <mh.shiftcalendaram.Adapters.ExpandableList
         android:id="@+id/listview"
         android:layout_below="@+id/first"

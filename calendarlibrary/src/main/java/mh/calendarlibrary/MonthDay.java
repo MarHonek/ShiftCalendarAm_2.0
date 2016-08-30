@@ -29,6 +29,10 @@ public final class MonthDay implements Parcelable {
 	Holidays holidays;
 
 	boolean isHoliday;
+	boolean isNote;
+
+	String changedShiftName;
+	int changedShiftColor;
 
 	/**
 	 * The constructor of mMonth mDay.
@@ -46,7 +50,6 @@ public final class MonthDay implements Parcelable {
 		mIsToday = isToday(mCalendar);
 
 		isHoliday = holidays.isTodayHoliday();
-		Log.v("dd", "ok");
 
 	}
 
@@ -107,11 +110,33 @@ public final class MonthDay implements Parcelable {
 		return isHoliday;
 	}
 
+	protected void setDayNote(boolean isNote) {
+		this.isNote = isNote;
+	}
+
+	protected void setChangedShift(String changedShiftName, int changedShiftColor) {
+		this.changedShiftName = changedShiftName;
+		this.changedShiftColor = changedShiftColor;
+	}
+
+	protected boolean isTodayNote() {
+		return isNote;
+	}
+
 
 	protected String getShift() {
 		return shift;
 
 	}
+
+	protected String getChangedShiftName() {
+		return changedShiftName;
+	}
+
+	protected int getChangedShiftColor() {
+		return changedShiftColor;
+	}
+
 
 	/**
 	 * Get the string of lunar mDay of current mDay.

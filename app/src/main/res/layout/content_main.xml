@@ -15,6 +15,12 @@
         android:layout_height="4dp"
         android:background="@drawable/shadow"/>
 
+    <fragment
+        android:name="mh.shiftcalendaram.calendarHeader.FragmentDefault"
+        android:id="@+id/fragment_place"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <mh.calendarlibrary.CalendarView
         android:id="@+id/calendar_view"
         android:layout_width="wrap_content"

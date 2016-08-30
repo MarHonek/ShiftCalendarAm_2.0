@@ -26,20 +26,24 @@ import android.widget.TimePicker;
 import org.xdty.preference.colorpicker.ColorPickerDialog;
 import org.xdty.preference.colorpicker.ColorPickerSwatch;
 
+import java.util.ArrayList;
+
 import mh.calendarlibrary.Database.Database;
+import mh.calendarlibrary.Templates.ShiftTemplate;
 
 public class CreateShiftFormActivity extends AppCompatActivity {
 
     TextInputLayout nameLayout, shortNameLayout;
     EditText name, shortName, alarm;
     TextView startWork, endWork, startWorkLabel, endWorkLabel;
-    SwitchCompat allDaySwitch;
+    SwitchCompat schemeTypePicker;
 
     ImageView palette;
     AppBarLayout head;
     int selectedColor;
     String strColor;
 
+    boolean edit = false;
     int hour, minute;
 
     TimePickerDialog timeDialog;
@@ -70,7 +74,7 @@ public class CreateShiftFormActivity extends AppCompatActivity {
         shortNameLayout = (TextInputLayout)findViewById(R.id.input_layout_createShift_shortName);
         name = (EditText)findViewById(R.id.edit_text_createShift_name);
         shortName = (EditText)findViewById(R.id.edit_text_createShift_shortName);
-        allDaySwitch = (SwitchCompat)findViewById(R.id.toggleButton_createShift_allDay);
+        schemeTypePicker = (SwitchCompat)findViewById(R.id.toggleButton_createShift_allDay);
         head = (AppBarLayout)findViewById(R.id.create_shift_head);
         palette = (ImageView)findViewById(R.id.imageView_palette);
 
@@ -80,6 +84,14 @@ public class CreateShiftFormActivity extends AppCompatActivity {
 
         final ColorPickerDialog dialog = ColorPickerDialog.newInstance(R.string.color_picker_default_title, mColors, selectedColor, 5, ColorPickerDialog.SIZE_SMALL);
 
+
+        int listPosition = getIntent().getIntExtra("position", -1);
+        if(listPosition != -1) {
+            edit = true;
+            getDataToEdit(listPosition);
+        }
+
+
         palette.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -88,7 +100,7 @@ public class CreateShiftFormActivity extends AppCompatActivity {
             }
         });
 
-        allDaySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        schemeTypePicker.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 startWork.setEnabled(!isChecked);
@@ -208,8 +220,34 @@ public class CreateShiftFormActivity extends AppCompatActivity {
     }
 
     public void insertShiftToDatabase(Database data) {
+        //TODO: smazat ten prevod do hex
         data.insertShifts(name.getText().toString(), shortName.getText().toString(), Integer.toHexString(selectedColor), null, null, null);
     }
 
+    public void colorHeader(int chooseColor) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Colors.convertColorToDark(chooseColor));
+        }
+    }
+
+    //TODO: taky chybi poznamka
+    //TODO: chybí cas
+    public void getDataToEdit(int listPosition) {
+        ArrayList<ShiftTemplate> shifts = data.getShifts();
+        name.setText(shifts.get(listPosition).getName());
+        shortName.setText(shifts.get(listPosition).getShortName());
+        selectedColor = shifts.get(listPosition).getColor();
+        head.setBackgroundColor(selectedColor);
+        colorHeader(selectedColor);
+    }
+
+    public void setShadows() {
+        View shadow = (View)findViewById(R.id.shadow);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            shadow.setVisibility(View.GONE);
+        }
+    }
 
 }

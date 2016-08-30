@@ -25,6 +25,7 @@
         <activity
             android:name=".AccountListActivity"
             android:label="@string/title_activity_account_list"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".CreateShiftFormActivity"
@@ -44,6 +45,11 @@
         <activity
             android:name=".StatisticActivity"
             android:label="@string/title_activity_statistic"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ChangeShiftActivity"
+            android:label="@string/title_activity_change_shift"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

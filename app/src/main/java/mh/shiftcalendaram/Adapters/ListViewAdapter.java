@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import mh.calendarlibrary.Templates.ListTemplate;
 import mh.shiftcalendaram.R;
 import mh.calendarlibrary.Templates.ShiftTemplate;
 
@@ -61,6 +62,7 @@ public class ListViewAdapter extends BaseAdapter {
 
         name.setText(list.get(i).getName());
         shortName.setText(list.get(i).getShortName());
+
         GradientDrawable background = (GradientDrawable) circle.getBackground();
         background.setColor(list.get(i).getColor());
 

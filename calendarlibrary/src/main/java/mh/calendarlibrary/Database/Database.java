@@ -11,6 +11,8 @@ import java.util.ArrayList;
 
 import mh.calendarlibrary.MonthView;
 import mh.calendarlibrary.Templates.AccountTemplate;
+import mh.calendarlibrary.Templates.ChangedShiftTemplate;
+import mh.calendarlibrary.Templates.NoteTemplate;
 import mh.calendarlibrary.Templates.ShiftTemplate;
 
 /**
@@ -24,13 +26,18 @@ public class Database extends SQLiteOpenHelper {
 
     String createTableAccounts = "CREATE TABLE Accounts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, shiftSchemeGroup TEXT, shiftSchemeID INTEGER, color TEXT, desc TEXT)";
 
-    String createTable2 = "CREATE TABLE alternative ( " +
+    String createTable6 = "CREATE TABLE alternative ( " +
             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
             "kind TEXT, "+
             "position INTEGER, month TEXT, year TEXT, custom INTEGER, color TEXT )";
 
-    String createTable3 = "CREATE TABLE notes ( " +
+    String createTable2 = "CREATE TABLE ChangedShifts ( id INTEGER PRIMARY KEY AUTOINCREMENT, shiftID INTEGER, day INTEGER, month INTEGER, year INTEGER, accountID INTEGER )";
+
+    String createTable5 = "CREATE TABLE notes ( " +
             "id INTEGER PRIMARY KEY AUTOINCREMENT, position INTEGER, month TEXT, year TEXT, note TEXT, custom INTEGER )";
+
+    String createTable3 = "CREATE TABLE notes ( " +
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, day INTEGER, month INTEGER, year INTEGER, note TEXT, accountID INTEGER )";
 
     String createTableShifts = "CREATE TABLE Shifts ( id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, short TEXT, color TEXT, timeFrom TEXT, timeTo TEXT, desc TEXT)";
 
@@ -84,7 +91,6 @@ public class Database extends SQLiteOpenHelper {
         }
         else
         {
-            Log.v("HOlo", "hmm");
             db.execSQL("DROP TABLE IF EXISTS Accounts");
             db.execSQL("DROP TABLE IF EXISTS alternative");
             db.execSQL("DROP TABLE IF EXISTS notes");
@@ -105,7 +111,7 @@ public class Database extends SQLiteOpenHelper {
         values.put("desc", desc);
 
         db.insert("Accounts",null, values);
-        Log.v("wdwd", "OK");
+
         db.close();
     }
 
@@ -128,8 +134,6 @@ public class Database extends SQLiteOpenHelper {
 
     public void insertAlternative(String kind, int position, String month, String year, int custom, String color)
     {
-
-
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -143,19 +147,33 @@ public class Database extends SQLiteOpenHelper {
         db.insert("alternative", null, values);
 
         db.close();
-
-
     }
 
-    public void insertNote(int position, String month, String year, String note, int custom) {
+    public void insertChangedShift(int shiftID, int day, int month, int year, int accountID)
+    {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put("position", position);
+        values.put("shiftID", shiftID);
+        values.put("day", day);
+        values.put("month", month);
+        values.put("year", year);
+        values.put("accountID", accountID);
+
+        db.insert("ChangedShifts", null, values);
+
+        db.close();
+    }
+
+    public void insertNote(int day, int month, int year, String note, int custom) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("day", day);
         values.put("month", month);
         values.put("year", year);
         values.put("note", note);
-        values.put("custom", custom);
+        values.put("accountID", custom);
 
         db.insert("notes", null, values);
 
@@ -166,78 +184,118 @@ public class Database extends SQLiteOpenHelper {
     ------------------------------------------------------------------------------------------------------------
                                             Get method
     ------------------------------------------------------------------------------------------------------------
-    */
+*/
 
-   /* public ArrayList<AlternativeShifts> getSpecial()
+    public ArrayList<ChangedShiftTemplate> getChangedShifts()
     {
 
-        ArrayList<AlternativeShifts> list = new ArrayList<AlternativeShifts>();
-        String query = "SELECT * FROM alternative";
+        ArrayList<ChangedShiftTemplate> list = new ArrayList<ChangedShiftTemplate>();
+        String query = "SELECT * FROM ChangedShifts";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()) {
             do {
+                int shiftID = cursor.getInt(1);
+                int day = cursor.getInt(2);
+                int month = cursor.getInt(3);
+                int year = cursor.getInt(4);
+                int accountID = cursor.getInt(5);
 
-                String kind = cursor.getString(1);
-                int position = cursor.getInt(2);
-                String month = cursor.getString(3);
-                String year = cursor.getString(4);
-                int custom = cursor.getInt(5);
-                String color = cursor.getString(6);
-
-
-
-                list.add(new AlternativeShifts(kind, position, month, year, custom, color));
+                list.add(new ChangedShiftTemplate(shiftID, day, month, year, accountID));
             } while (cursor.moveToNext());
         }
 
         return list;
-    }*/
+    }
 
-
-    /*public ArrayList<ShiftNotesTemplate> getTextNote()
+    public ArrayList<ChangedShiftTemplate> getChangedShiftsByAccount(int account)
     {
 
-        ArrayList<ShiftNotesTemplate> list = new ArrayList<ShiftNotesTemplate>();
+        ArrayList<ChangedShiftTemplate> list = new ArrayList<ChangedShiftTemplate>();
+        String query = "SELECT * FROM ChangedShifts WHERE accountID="+account;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()) {
+            do {
+                int shiftID = cursor.getInt(1);
+                int day = cursor.getInt(2);
+                int month = cursor.getInt(3);
+                int year = cursor.getInt(4);
+                int accountID = cursor.getInt(5);
+
+                list.add(new ChangedShiftTemplate(shiftID, day, month, year, accountID));
+            } while (cursor.moveToNext());
+        }
+
+        return list;
+    }
+
+
+    public ArrayList<NoteTemplate> getTextNote()
+    {
+
+        ArrayList<NoteTemplate> list = new ArrayList<NoteTemplate>();
 
         String query = "SELECT * FROM notes";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 
         String text = "";
-        int position = 0;
-        String month = "";
-        String year = "";
-        int custom = -1;
+        int day = 0;
+        int month = 0;
+        int year = 0;
+        int accountID = 0;
         if (cursor.moveToFirst()) {
             do
             {
-                position = cursor.getInt(1);
-                month = cursor.getString(2);
-                year = cursor.getString(3);
+                day = cursor.getInt(1);
+                month = cursor.getInt(2);
+                year = cursor.getInt(3);
                 text = cursor.getString(4);
-                custom = cursor.getInt(5);
+                accountID = cursor.getInt(5);
 
-                if(custom != -1)
-                    list.add(new ShiftNotesTemplate(position, month, year, text, custom));
+                if(accountID != -1)
+                    list.add(new NoteTemplate(day, month, year, text, accountID));
 
             }while(cursor.moveToNext());
 
         }
         return list;
     }
-*/
 
 
+    public ArrayList<NoteTemplate> getNotesByAccount(int account)
+    {
+        ArrayList<NoteTemplate> list = new ArrayList<NoteTemplate>();
 
+        String query = "SELECT * FROM notes WHERE accountID="+account;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
 
+        String text = "";
+        int day = 0;
+        int month = 0;
+        int year = 0;
+        int accountID = 0;
+        if (cursor.moveToFirst()) {
+            do
+            {
+                day = cursor.getInt(1);
+                month = cursor.getInt(2);
+                year = cursor.getInt(3);
+                text = cursor.getString(4);
+                accountID = cursor.getInt(5);
 
+                if(accountID != -1)
+                    list.add(new NoteTemplate(day, month, year, text, accountID));
 
+            }while(cursor.moveToNext());
 
-
-
-
+        }
+        return list;
+    }
 
     public ArrayList<AccountTemplate> getAccounts() {
 
@@ -251,18 +309,41 @@ public class Database extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
 
+                int id = cursor.getInt(0);
                 String name = cursor.getString(1);
                 String shiftSchemeGroup = cursor.getString(2);
                 int shiftSchemeID = cursor.getInt(3);
                 String color = cursor.getString(4);
                 String desc = cursor.getString(5);
-                Log.v("wd", "ddw");
-                account = new AccountTemplate(name, shiftSchemeGroup, shiftSchemeID, color, desc);
+                account = new AccountTemplate(id, name, shiftSchemeGroup, shiftSchemeID, color, desc);
                 accounts.add(account);
             } while (cursor.moveToNext());
         }
-        Log.v("dw", "dwd");
         return accounts;
+    }
+
+    public AccountTemplate getAccountByID(int ID) {
+
+        String query = "SELECT  * FROM Accounts WHERE id="+ID;
+
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        AccountTemplate account = null;
+        if (cursor.moveToFirst()) {
+            do {
+
+                int id = cursor.getInt(0);
+                String name = cursor.getString(1);
+                String shiftSchemeGroup = cursor.getString(2);
+                int shiftSchemeID = cursor.getInt(3);
+                String color = cursor.getString(4);
+                String desc = cursor.getString(5);
+                account = new AccountTemplate(id, name, shiftSchemeGroup, shiftSchemeID, color, desc);
+            } while (cursor.moveToNext());
+        }
+        return account;
     }
 
     public ArrayList<ShiftTemplate> getShifts() {
@@ -274,12 +355,13 @@ public class Database extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()) {
             do {
+                int ID = cursor.getInt(0);
                 String name = cursor.getString(1);
                 String shortName = cursor.getString(2);
                 String color = cursor.getString(3);
-                String desc  = "dw";
+                String desc  = cursor.getString(6);
 
-                list.add(new ShiftTemplate(name, shortName, color, desc));
+                list.add(new ShiftTemplate(ID, name, shortName, color, desc));
             } while (cursor.moveToNext());
         }
         return list;
@@ -335,11 +417,11 @@ public class Database extends SQLiteOpenHelper {
     ------------------------------------------------------------------------------------------------------------
     */
 
-    public void deleteAlter(int position, String month, String year, int positionOfCustom)
+    public void deleteChangedShift(int day, int month, int year, int positionOfCustom)
     {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        String d ="DELETE FROM alternative WHERE position="+position+" and month='"+month+"' and year='"+year+"' and custom='"+positionOfCustom+"'";
+        String d ="DELETE FROM alternative WHERE position="+day+" and month='"+month+"' and year='"+year+"' and custom='"+positionOfCustom+"'";
         db.execSQL(d);
 
         db.close();

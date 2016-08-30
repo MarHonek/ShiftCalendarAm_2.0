@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Kalendář AM</string>
     <string name="title_activity_symbol_manage">Správa směn</string>
-    <string name="title_activity_account_list">AccountListActivity</string>
+    <string name="title_activity_account_list">Správa účtů</string>
     <string name="ic_accept">Potvrdit</string>
 
 
@@ -36,6 +36,7 @@
         <item>3 hodiny před</item>
         <item>Vlastní</item>
     </string-array>
-    <string name="title_activity_scheme_list">SchemeListActivity</string>
+    <string name="title_activity_scheme_list">Pracoviště</string>
     <string name="title_activity_statistic">StatisticActivity</string>
+    <string name="title_activity_change_shift">ChangeShiftActivity</string>
 </resources>
